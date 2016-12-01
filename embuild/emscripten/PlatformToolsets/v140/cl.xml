@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
+  <Rule Name="CL" PageTemplate="tool" DisplayName="C/C++" SwitchPrefix="/" Order="10">
+    
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General"/>
+      <Category Name="Optimization" DisplayName="Optimization"/>
+      <Category Name="Language" DisplayName="Language"/>
+      <Category Name="Preprocessor" DisplayName="Preprocessor"/>
+      <!--
+      <Category Name="Code Generation" DisplayName="코드 생성"/>
+      <Category Name="Precompiled Headers" DisplayName="미리 컴파일된 헤더"/>
+      <Category Name="Browse Information" DisplayName="찾아보기 정보"/>
+      -->
+      <Category Name="Output Files" DisplayName="출력 파일"/>
+      <Category Name="Advanced" DisplayName="Advanced"/>
+      <Category Name="All Options" DisplayName="All Options" Subtype="Search"/>
+      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine"/>
+    </Rule.Categories>
+
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
+    </Rule.DataSource>
+
+    <StringProperty Name="ToolExe" Visible="False" IncludeInCommandLine="False" />
+    <StringProperty Name="TrackerLogDirectory" Visible="False" Switch="tlog_directory:" />
+    <BoolProperty Name="MinimalRebuildFromTracking" Switch="tlog_mintest" Visible="false" />
+    <BoolProperty Name="TrackFileAccess" Visible="False" Switch="tlog_enable" />
+
+    <StringListProperty Name="Sources" IsRequired="true" Visible="False">
+    </StringListProperty>
+    
+    <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="추가 포함 디렉터리" Description="포함 경로에 추가할 하나 이상의 디렉터리를 지정합니다. 항목이 여러 개일 때는 세미콜론으로 구분합니다.     (/I[path])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
+    </StringListProperty>
+
+    <EnumProperty Name="DebugInformationFormat" DisplayName="디버그 정보 형식" Description="컴파일러에서 생성되는 디버깅 정보 형식을 지정합니다. (/g0, /g1, /g2, /g3, /g4)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.DebugInformationFormat">
+      <EnumValue Name="" Switch="" DisplayName="" Description="">
+      </EnumValue>
+      <EnumValue Name="None" Switch="g0" DisplayName="None" Description="Make no effort to keep code debuggable. Will discard LLVM debug information (this is done by default in -01 and higher).">
+      </EnumValue>
+      <EnumValue Name="Whitespace" Switch="g1" DisplayName="Whitespace" Description="Preserve whitespace (do not minify).">
+      </EnumValue>
+      <EnumValue Name="Function" Switch="g2" DisplayName="Function" Description="Preserve function names.">
+      </EnumValue>
+      <EnumValue Name="Variable" Switch="g3" DisplayName="Variable" Description="Preserve variable names.">
+      </EnumValue>
+      <EnumValue Name="Max" Switch="g4" DisplayName="Max" Description="Preserve LLVM debug information. This is the highest level of debuggability. If -g was used when compiling the C/C++ sources, this shows line number debug comments, and generates source maps.">
+      </EnumValue>
+    </EnumProperty>
+    
+    <BoolProperty Name="SuppressStartupBanner" DisplayName="시작 배너 표시 안 함" Description="컴파일러가 시작될 때 나타나는 시작 배너와 컴파일하는 동안 나타나는 정보 메시지를 표시하지 않습니다." Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCCLCompilerTool.SuppressStartupBanner">
+    </BoolProperty>
+    
+    <StringProperty Name="Encoding" DisplayName="파일 인코딩" Description="입력 파일의 텍스트 인코딩입니다." Category="Advanced" Switch="charset:" />
+
+    <StringProperty Name="AdditionalOptions" DisplayName="추가 옵션" Description="추가 옵션입니다." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+    </StringProperty>
+
+    <StringProperty Name="CommandLineTemplate" Visible="False" IncludeInCommandLine="False" />
+    <StringProperty Name="BuildingInIDE" Visible="False" IncludeInCommandLine="False" />
+    
+    <StringProperty Subtype="file" Name="ObjectFileName" DisplayName="개체 파일 이름" Description="기본 개체 파일 이름을 재정의하는 이름을 지정합니다. 파일 또는 디렉터리 이름이 될 수 있습니다.     (/Fo[name])" Category="Output Files" Switch="Fo" F1Keyword="VC.Project.VCCLCompilerTool.ObjectFile">
+    </StringProperty>
+
+    <EnumProperty Name="ISOStandard" DisplayName="C++ ISO Standard" Description="C++ 버전 종류를 선택합니다." Category="Language">
+      <EnumValue Name="CPP98" Switch="std=c++98" DisplayName="C++98" Description="C++98입니다.">
+      </EnumValue>
+      <EnumValue Name="CPP11" Switch="std=c++11" DisplayName="C++11" Description="C++11입니다.">
+      </EnumValue>
+      <EnumValue Name="CPP14" Switch="std=c++14" DisplayName="C++14" Description="C++14입니다.">
+      </EnumValue>
+      <EnumValue Name="CPP1Z" Switch="std=c++1z" DisplayName="C++1z" Description="C++1z입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU98" Switch="std=gnu++98" DisplayName="GNU++98" Description="그누 확장을 포함하는 C++98입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU11" Switch="std=gnu++11" DisplayName="GNU++11" Description="그누 확장을 포함하는 C++11입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU14" Switch="std=gnu++14" DisplayName="GNU++14" Description="그누 확장을 포함하는 C++14입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU1Z" Switch="std=gnu++1z" DisplayName="GNU++1z" Description="그누 확장을 포함하는 C++1z입니다.">
+      </EnumValue>
+    </EnumProperty>
+    
+    <StringListProperty Name="PreprocessorDefinitions" DisplayName="전처리기 정의" Description="소스 파일에 대한 전처리 기호를 정의합니다." Category="Preprocessor" Switch="D " F1Keyword="VC.Project.VCCLCompilerTool.PreprocessorDefinitions">
+    </StringListProperty>
+
+    <EnumProperty Name="Optimization" DisplayName="최적화" Description="코드 최적화를 위한 옵션을 선택합니다. 특정 최적화 옵션을 사용하려면 [사용자 지정]을 선택합니다.     (-O0, -O1, -O2, -O3, -Os, -Oz)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.Optimization">
+      <EnumValue Name="Custom" Switch="" DisplayName="Custom" Description="Custom Optimization">
+      </EnumValue>
+      <EnumValue Name="Disabled" Switch="O0" DisplayName="Disabled" Description="No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.">
+      </EnumValue>
+      <EnumValue Name="Simple" Switch="O1" DisplayName="Simple" Description="Simple optimizations. These include using asm.js, LLVM -O1 optimizations, relooping, removing runtime assertions and C++ exception catching, and enabling -s ALIASING_FUNCTION_POINTERS=1. This is the recommended setting when you want a reasonably optimized build that is generated as quickly as possible (it builds much faster than -O2).">
+      </EnumValue>
+      <EnumValue Name="JS2" Switch="O2" DisplayName="JS-level" Description="Like -O1, but with various JavaScript-level optimizations and LLVM -O3 optimizations.">
+      </EnumValue>
+      <EnumValue Name="JS3" Switch="O3" DisplayName="Additional JS-level" Description="Like -O2, but with additional JavaScript optimizations that can take a significant amount of compilation time.">
+      </EnumValue>
+      <EnumValue Name="MinSpace" Switch="Os" DisplayName="Reduce code size" Description="Like -O3, but with extra optimizations that reduce code size at the expense of performance. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+      <EnumValue Name="MaxSpeed" Switch="Oz" DisplayName="Reduce code size further" Description="Like -Os, but reduces code size even further. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+    </EnumProperty>
+
+    <EnumProperty Name="BuildOutput" DisplayName="Build Output" Description="Build Output" Category="Advanced">
+      <EnumValue Name="FileName" Switch="log:filename" DisplayName="File name only" Description="Show just file name.">
+      </EnumValue>
+      <EnumValue Name="Detail" Switch="log:cmdline" DisplayName="Command line" Description="Show executing command line.">
+      </EnumValue>
+    </EnumProperty>
+    
+    <!--
+    <StringListProperty Subtype="folder" Name="AdditionalUsingDirectories" DisplayName="추가 #using 디렉터리" Description="#using 지시문에 전달된 이름을 확인하기 위해 검색할 하나 이상의 디렉터리(디렉터리 이름이 여러 개인 경우 세미콜론으로 구분)를 지정합니다.  (/AI[path])" Category="General" Switch="AI" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalUsingDirectories">
+    </StringListProperty>
+<EnumProperty Name="CompileAsManaged" DisplayName="공용 언어 런타임 지원" Description=".NET 런타임 서비스를 사용합니다. 이 스위치는 일부 다른 스위치와 호환되지 않습니다. 자세한 내용은 /clr 스위치에 대한 설명서를 참조하십시오." Category="General" F1Keyword="VC.Project.VCCLCompilerTool.CompileAsManaged">
+  <EnumValue Name="false" Switch="" DisplayName="공용 언어 런타임 지원 안 함" Description="공용 언어 런타임 지원 안 함">
+  </EnumValue>
+  <EnumValue Name="true" Switch="clr" DisplayName="공용 언어 런타임 지원" Description="다른 CLR 응용 프로그램에서 사용할 수 있는 응용 프로그램의 메타데이터를 만들고, 응용 프로그램이 다른 CLR 구성 요소의 메타데이터에 있는 형식과 데이터를 사용할 수 있게 만듭니다.">
+  </EnumValue>
+  <EnumValue Name="Pure" Switch="clr:pure" DisplayName="순수 MSIL 공용 언어 런타임 지원" Description="MSIL로 컴파일된 네이티브 형식을 포함할 수 있지만 네이티브 실행 코드가 제외된 MSIL 전용 출력 파일을 생성합니다.">
+  </EnumValue>
+  <EnumValue Name="Safe" Switch="clr:safe" DisplayName="안전 MSIL 공용 언어 런타임 지원" Description="확인할 수 있는 MSIL 전용(네이티브 실행 코드 제외)  출력 파일을 생성합니다.">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty Name="CompileAsWinRT" DisplayName="Windows 런타임 확장 사용" Description="Windows 런타임 언어 확장 사용  (/ZW)" Category="General" Switch="ZW" F1Keyword="VC.Project.VCCLCompilerTool.CompileAsWinRT">
+</BoolProperty>
+<BoolProperty Name="WinRTNoStdLib" DisplayName="표준 WinRT 라이브러리 없음" Description="컴파일러에서 기본 Windows.winmd를 사용하지 않도록 지정합니다. 이 경우 /FU로 전달해야 합니다." Category="General" Switch="ZW:nostdlib" Visible="false">
+</BoolProperty>
+<EnumProperty Name="WarningLevel" DisplayName="경고 수준" Description="컴파일러가 코드 오류를 처리하는 수준을 선택합니다.     (/W0 - /W4)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.WarningLevel">
+  <EnumValue Name="TurnOffAllWarnings" Switch="W0" DisplayName="모든 경고 해제" Description="수준 0은 모든 경고를 해제합니다.">
+  </EnumValue>
+  <EnumValue Name="Level1" Switch="W1" DisplayName="수준1" Description="수준 1은 심각한 경고를 표시합니다. 수준 1은 명령줄의 기본 경고 수준입니다.">
+  </EnumValue>
+  <EnumValue Name="Level2" Switch="W2" DisplayName="수준2" Description="수준 2는 수준 1의 모든 경고와 수준 1보다 덜 심각한 경고를 표시합니다.">
+  </EnumValue>
+  <EnumValue Name="Level3" Switch="W3" DisplayName="수준3" Description="수준 3은 수준 2의 모든 경고와 프로덕션 용도로 필요한 모든 기타 경고를 표시합니다.">
+  </EnumValue>
+  <EnumValue Name="Level4" Switch="W4" DisplayName="수준4" Description="수준 4는 수준 3의 모든 경고와 대개 안전하게 무시할 수 있는 정보 메시지를 표시합니다.">
+  </EnumValue>
+  <EnumValue Name="EnableAllWarnings" Switch="Wall" DisplayName="모든경고사용" Description="기본적으로 해제되어 있는 경고를 포함한 모든 경고를 사용하도록 설정합니다.">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty ReverseSwitch="WX-" Name="TreatWarningAsError" DisplayName="경고를 오류로 처리" Description="모든 컴파일러 경고를 오류로 처리합니다. 새 프로젝트인 경우 모든 컴파일에서 /WX를 사용하는 것이 좋습니다. 모든 경고를 확인하면 찾기 어려운 몇 가지 코드 오류를 확인할 수 있습니다." Category="General" Switch="WX" F1Keyword="VC.Project.VCCLCompilerTool.WarnAsError">
+</BoolProperty>
+<StringProperty Name="WarningVersion" DisplayName="경고 버전" Description="특정 컴파일러 버전 이후에 발생한 경고를 숨깁니다.     (/Wv:xx[.yy[.zzzzz]])" Category="General" Switch="Wv:" F1Keyword="VC.Project.VCCLCompilerTool.WarningVersion">
+</StringProperty>
+<BoolProperty ReverseSwitch="sdl-" Name="SDLCheck" DisplayName="SDL 검사" Description="추가 SDL(Security Development Lifecycle) 권장 검사입니다. 추가 보안 코드 생성 기능을 사용하고 추가 보안 관련 경로를 오류로 처리하도록 설정합니다. (/sdl, /sdl-)" Category="General" Switch="sdl" F1Keyword="VC.Project.VCCLCompilerTool.SDLCheck">
+</BoolProperty>
+<StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="추적기 로그 디렉터리" Description="추적기 로그 디렉터리입니다." Category="General" IncludeInCommandLine="false" Visible="false">
+</StringProperty>
+<BoolProperty Name="MultiProcessorCompilation" DisplayName="다중 프로세서 컴파일" Description="다중 프로세서 컴파일입니다." Category="General" Switch="MP" F1Keyword="VC.Project.VCCLCompilerTool.MultiProcessorCompilation">
+  <Argument Property="ProcessorNumber" IsRequired="false"/>
+</BoolProperty>
+<IntProperty Name="ProcessorNumber" DisplayName="프로세서 수" Description="프로세서 수입니다." Category="General" Visible="false">
+</IntProperty>
+<EnumProperty Name="InlineFunctionExpansion" DisplayName="인라인 함수 확장" Description="빌드에 대한 인라인 함수 확장 수준을 선택합니다.     (/Ob1, /Ob2)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.InlineFunctionExpansion">
+  <EnumValue Name="Default" Switch="" DisplayName="기본값">
+  </EnumValue>
+  <EnumValue Name="Disabled" Switch="Ob0" DisplayName="사용 안 함" Description="기본적으로 사용되는 인라인 확장을 사용하지 않도록 설정합니다.">
+  </EnumValue>
+  <EnumValue Name="OnlyExplicitInline" Switch="Ob1" DisplayName="__inline만 확장" Description="inline, __inline, __forceinline 또는 __inline으로 표시된 함수나 클래스 선언에 정의된 C++ 멤버 함수만 확장합니다.">
+  </EnumValue>
+  <EnumValue Name="AnySuitable" Switch="Ob2" DisplayName="적합한 것 모두 확장" Description="inline 또는 __inline으로 표시된 함수나 컴파일러가 선택한 다른 모든 함수를 확장합니다(컴파일러의 판단에 따른 이러한 확장을 auto-inlining이라고 함).">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty Name="IntrinsicFunctions" DisplayName="내장 함수 사용" Description="내장 함수를 사용합니다.  내장 함수를 사용하면 더 빠르지만 더 큰 코드가 생성됩니다.     (/Oi)" Category="Optimization" Switch="Oi" F1Keyword="VC.Project.VCCLCompilerTool.EnableIntrinsicFunctions">
+</BoolProperty>
+<EnumProperty Name="FavorSizeOrSpeed" DisplayName="크기 또는 속도" Description="코드 크기나 코드 속도 중 우선하는 것을 선택합니다. '전역 최적화'가 설정되어 있어야 합니다.     (/Ot, /Os)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.FavorSizeOrSpeed">
+  <EnumValue Name="Size" Switch="Os" DisplayName="코드 크기 우선" Description="코드 크기 우선. 컴파일러에 속도보다 크기를 우선하도록 지시하여 EXE 및 DLL의 크기를 최소화합니다.">
+  </EnumValue>
+  <EnumValue Name="Speed" Switch="Ot" DisplayName="코드 속도 우선" Description="코드 속도 우선. 컴파일러에 크기보다 속도를 우선하도록 지시하여 EXE 및 DLL의 속도를 최대화합니다. 이것이 기본값입니다. ">
+  </EnumValue>
+  <EnumValue Name="Neither" Switch="" DisplayName="모두 안 함" Description="크기 최적화와 속도 최적화를 사용하지 않습니다.">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty ReverseSwitch="Oy-" Name="OmitFramePointers" DisplayName="프레임 포인터 생략" Description="호출 스택에서 프레임 포인터를 생성하지 않습니다." Category="Optimization" Switch="Oy" F1Keyword="VC.Project.VCCLCompilerTool.OmitFramePointers">
+</BoolProperty>
+<BoolProperty Name="EnableFiberSafeOptimizations" DisplayName="파이버 안전 최적화 사용" Description="파이버 및 스레드 로컬 저장소 액세스를 사용할 경우 메모리 공간을 최적화합니다.     (/GT)" Category="Optimization" Switch="GT" F1Keyword="VC.Project.VCCLCompilerTool.EnableFiberSafeOptimizations">
+</BoolProperty>
+<BoolProperty Name="WholeProgramOptimization" DisplayName="전체 프로그램 최적화" Description="코드 생성을 링크 타임까지 지연시켜 크로스 모듈을 최적화합니다. 링커 옵션 '링크 타임 코드 생성'이 설정되어 있어야 합니다.     (/GL)" Category="Optimization" Switch="GL" F1Keyword="VC.Project.VCCLWCECompilerTool.WholeProgramOptimization">
+</BoolProperty>
+<StringListProperty Name="UndefinePreprocessorDefinitions" DisplayName="전처리기 정의 해제" Description="전처리기 정의 해제를 하나 이상 지정합니다.     (/U[macro])" Category="Preprocessor" Switch="U" F1Keyword="VC.Project.VCCLCompilerTool.UndefinePreprocessorDefinitions">
+</StringListProperty>
+<BoolProperty Name="UndefineAllPreprocessorDefinitions" DisplayName="모든 전처리기 정의 해제" Description="이전에 정의한 모든 전처리기 값을 정의 해제합니다.     (/u)" Category="Preprocessor" Switch="u" F1Keyword="VC.Project.VCCLCompilerTool.UndefineAllPreprocessorDefinitions">
+</BoolProperty>
+<BoolProperty Name="IgnoreStandardIncludePath" DisplayName="표준 포함 경로 무시" Description="컴파일러가 INCLUDE 환경 변수에 지정된 디렉터리에서 포함 파일을 검색하지 않도록 설정합니다." Category="Preprocessor" Switch="X" F1Keyword="VC.Project.VCCLCompilerTool.IgnoreStandardIncludePath">
+</BoolProperty>
+<BoolProperty Name="PreprocessToFile" DisplayName="파일로 전처리" Description="C 및 C++ 소스 파일을 전처리하고 전처리된 출력을 파일에 씁니다. 이 옵션은 컴파일을 억제하므로 .obj 파일이 생성되지 않습니다." Category="Preprocessor" Switch="P" F1Keyword="VC.Project.VCCLCompilerTool.GeneratePreprocessedFile">
+</BoolProperty>
+<StringProperty Name="PreprocessOutputPath" DisplayName="전처리 출력 경로" Description="전처리기의 출력 경로를 지정합니다. 기본 위치는 소스 파일의 위치입니다." Category="Preprocessor" Switch="Fi" Visible="false">
+</StringProperty>
+<BoolProperty Name="PreprocessSuppressLineNumbers" DisplayName="전처리 줄 번호 표시 안 함" Description="#line 지시문을 사용하지 않고 전처리합니다." Category="Preprocessor" Switch="EP" F1Keyword="VC.Project.VCCLCompilerTool.GeneratePreprocessedFileNoLines">
+</BoolProperty>
+<BoolProperty Name="PreprocessKeepComments" DisplayName="주석 유지" Description="소스 코드의 주석 스트립을 표시하지 않습니다. '전처리' 옵션 중 하나가 설정되어 있어야 합니다.     (/C)" Category="Preprocessor" Switch="C" F1Keyword="VC.Project.VCCLCompilerTool.KeepComments">
+</BoolProperty>
+<BoolProperty ReverseSwitch="GF-" Name="StringPooling" DisplayName="문자열 풀링 사용" Description="컴파일러가 프로그램 이미지와 실행 중인 메모리에서 동일한 문자열에 대해 하나의 읽기 전용 복사본을 만들어 더 작은 프로그램을 생성하는 문자열 풀링 최적화를 실행합니다. /O1, /O2 및 /ZI가 자동으로 /GF 옵션을 설정합니다. " Category="Code Generation" Switch="GF" F1Keyword="VC.Project.VCCLCompilerTool.StringPooling">
+</BoolProperty>
+<BoolProperty ReverseSwitch="Gm-" Name="MinimalRebuild" DisplayName="최소 다시 빌드 가능" Description="변경된 C++ 클래스 정의(헤더(.h) 파일에 저장됨)를 포함하는 C++ 소스 파일을 다시 컴파일해야 하는지 여부를 결정하는 최소 다시 빌드를 사용합니다." Category="Code Generation" Switch="Gm" F1Keyword="VC.Project.VCCLCompilerTool.MinimalRebuild">
+</BoolProperty>
+<EnumProperty Name="ExceptionHandling" DisplayName="C++ 예외 처리 가능" Description="컴파일러가 사용하는 예외 처리 모델을 지정합니다." Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.ExceptionHandling">
+  <EnumValue Name="Async" Switch="EHa" DisplayName="예, SEH 예외 있음" Description="비동기(구조적) 및 동기(C++) 예외를 catch하는 예외 처리 모델입니다. (/EHa)">
+  </EnumValue>
+  <EnumValue Name="Sync" Switch="EHsc" DisplayName="예" Description="C++ 예외만 catch하고 컴파일러에 Extern C 함수가 C++ 예외를 throw하지 않는다고 가정하도록 지시하는 예외 처리 모델입니다. (/EHsc)">
+  </EnumValue>
+  <EnumValue Name="SyncCThrow" Switch="EHs" DisplayName="예, Extern C 함수 있음" Description="C++ 예외만 catch하고 컴파일러에 Extern C 함수가 예외를 throw한다고 가정하도록 지시하는 예외 처리 모델입니다. (/EHs)">
+  </EnumValue>
+  <EnumValue Name="false" Switch="" DisplayName="아니요" Description="예외 처리를 하지 않습니다.">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty Name="SmallerTypeCheck" DisplayName="작은 형식 검사" Description="더 작은 형식으로의 변환을 검사할 수 있도록 하며, 디버그 이외의 다른 최적화 형식과 호환되지 않습니다.     (/RTCc)" Category="Code Generation" Switch="RTCc" F1Keyword="VC.Project.VCCLCompilerTool.SmallerTypeCheck">
+</BoolProperty>
+<EnumProperty Name="BasicRuntimeChecks" DisplayName="기본 런타임 검사" Description="기본 런타임 오류를 검사하며, 디버그 이외의 다른 최적화 형식과 호환되지 않습니다.     (/RTCs, /RTCu, /RTC1)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.BasicRuntimeChecks">
+  <EnumValue Name="StackFrameRuntimeCheck" Switch="RTCs" DisplayName="스택 프레임" Description="스택 프레임 런타임 오류를 검사합니다.">
+  </EnumValue>
+  <EnumValue Name="UninitializedLocalUsageCheck" Switch="RTCu" DisplayName="초기화되지 않은 변수" Description="초기화되지 않은 변수를 사용할 경우 보고합니다.">
+  </EnumValue>
+  <EnumValue Name="EnableFastChecks" Switch="RTC1" DisplayName="모두(/RTC1, /RTCsu와 동일)" Description="/RTCsu와 동일합니다.">
+  </EnumValue>
+  <EnumValue Name="Default" Switch="" DisplayName="기본값" Description="기본 런타임 검사입니다.">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="RuntimeLibrary" DisplayName="런타임 라이브러리" Description="링크할 런타임 라이브러리를 지정합니다.     (/MT, /MTd, /MD, /MDd)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.RuntimeLibrary">
+  <EnumValue Name="MultiThreaded" Switch="MT" DisplayName="다중 스레드" Description="응용 프로그램에서 런타임 라이브러리의 다중 스레드 정적 버전을 사용하게 됩니다.">
+  </EnumValue>
+  <EnumValue Name="MultiThreadedDebug" Switch="MTd" DisplayName="다중 스레드 디버그" Description="_DEBUG 및 _MT를 정의합니다. 또한, 이 옵션은 컴파일러가 .obj 파일에 라이브러리 이름 LIBCMTD.lib를 배치하여 링커가 LIBCMTD.lib를 사용하여 외부 기호를 확인하도록 만듭니다.">
+  </EnumValue>
+  <EnumValue Name="MultiThreadedDLL" Switch="MD" DisplayName="다중 스레드 DLL" Description="응용 프로그램에서 런타임 라이브러리의 다중 스레드 DLL별 버전을 사용하게 됩니다. _MT 및 _DLL을 정의하고 컴파일러가 라이브러리 이름 MSVCRT.lib를 .obj 파일에 배치하게 만듭니다.">
+  </EnumValue>
+  <EnumValue Name="MultiThreadedDebugDLL" Switch="MDd" DisplayName="다중 스레드 디버그 DLL" Description="_DEBUG, _MT 및 _DLL을 정의하고 응용 프로그램에서 런타임 라이브러리의 디버그 다중 스레드 DLL별 버전을 사용하게 됩니다. 또한 컴파일러가 라이브러리 이름 MSVCRTD.lib를 .obj 파일에 배치하게 만듭니다.">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="StructMemberAlignment" DisplayName="구조체 멤버 맞춤" Description="1, 2, 4, 8바이트 경계를 지정하여 구조체 멤버를 맞춥니다.     (/Zp[num])" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.StructMemberAlignment">
+  <EnumValue Name="1Byte" Switch="Zp1" DisplayName="1바이트" Description="1바이트 경계에서 구조체를 압축합니다. /Zp와 동일합니다.">
+  </EnumValue>
+  <EnumValue Name="2Bytes" Switch="Zp2" DisplayName="2바이트" Description="2바이트 경계에서 구조체를 압축합니다.">
+  </EnumValue>
+  <EnumValue Name="4Bytes" Switch="Zp4" DisplayName="4바이트" Description="4바이트 경계에서 구조체를 압축합니다.">
+  </EnumValue>
+  <EnumValue Name="8Bytes" Switch="Zp8" DisplayName="8바이트" Description="8바이트 경계에서 구조체를 압축합니다(기본값).">
+  </EnumValue>
+  <EnumValue Name="16Bytes" Switch="Zp16" DisplayName="16바이트" Description="16바이트 경계에서 구조체를 압축합니다.">
+  </EnumValue>
+  <EnumValue Name="Default" Switch="" DisplayName="기본값" Description="기본 맞춤 설정입니다.">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="BufferSecurityCheck" DisplayName="보안 검사" Description="보안 검사를 통해 스택 버퍼 오버런, 프로그램 보안에 대해 일반적으로 시도되는 공격을 탐지할 수 있습니다. (/GS-, /GS)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.BufferSecurityCheck">
+  <EnumValue Name="false" Switch="GS-" DisplayName="보안 검사 사용 안 함" Description="보안 검사를 사용하지 않습니다. (/GS-)">
+  </EnumValue>
+  <EnumValue Name="true" Switch="GS" DisplayName="보안 검사 사용" Description="보안 검사를 사용합니다. (/GS)">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="ControlFlowGuard" DisplayName="행 가드 제어" Description="가드 보안 검사는 잘못된 코드 블록에 디스패치하려는 시도를 검색하는 데 도움이 됩니다. (/guard:cf)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.ControlFlowGuard">
+  <EnumValue Name="Guard" Switch="guard:cf" DisplayName="예" Description="가드를 통한 보안 검사 사용(/guard:cf)">
+  </EnumValue>
+  <EnumValue Name="false" Switch="" DisplayName="아니요">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty ReverseSwitch="Gy-" Name="FunctionLevelLinking" DisplayName="함수 수준 링크 사용" Description="컴파일러가 개별 함수를 패키지된 함수의 형태로 패키지할 수 있습니다(COMDATs). 편집하며 계속하기가 작동하려면 필요합니다.     (/Gy)" Category="Code Generation" Switch="Gy" F1Keyword="VC.Project.VCCLCompilerTool.EnableFunctionLevelLinking">
+</BoolProperty>
+<BoolProperty ReverseSwitch="Qpar-" Name="EnableParallelCodeGeneration" DisplayName="병렬 코드 생성 사용" Description="컴파일러가 최적화를 사용할 때 #pragma 루프(hint_parallel[(n)])를 사용하여 식별된 루프에 대해 병렬 코드를 생성하도록 합니다." Category="Code Generation" Switch="Qpar" F1Keyword="VC.Project.VCCLCompilerTool.EnableParallelCodeGeneration">
+</BoolProperty>
+<EnumProperty Name="EnableEnhancedInstructionSet" DisplayName="고급 명령 집합 사용" Description="고급 명령 집합을 지원하는 프로세서에 포함된 명령을 사용할 수 있습니다. 예를 들어, IA-32에 대해 SSE2, AVX 및 AVX2, x64에 대해 AVX 및 AVX2 명령의 고급 기능을 사용할 수 있습니다. 현재 /arch:SSE 및 /arch:SSE2는 x86 아키텍처에 대해 빌드하는 경우에만 사용할 수 있습니다. 옵션을 지정하지 않으면 컴파일러에서 SSE2를 지원하는 프로세서에 있는 명령을 사용합니다. 고급 명령 사용은 /arch:IA32에서 사용할 수 없습니다.   (/arch:SSE, /arch:SSE2, /arch:AVX, /arch:AVX2, /arch:IA32)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.EnableEnhancedInstructionSet">
+  <EnumValue Name="StreamingSIMDExtensions" Switch="arch:SSE" DisplayName="스트리밍 SIMD 확장" Description="스트리밍 SIMD 확장입니다. (/arch:SSE)">
+  </EnumValue>
+  <EnumValue Name="StreamingSIMDExtensions2" Switch="arch:SSE2" DisplayName="스트리밍 SIMD 확장 2" Description="스트리밍 SIMD 확장 2입니다. (/arch:SSE2)">
+  </EnumValue>
+  <EnumValue Name="AdvancedVectorExtensions" Switch="arch:AVX" DisplayName="고급 벡터 확장" Description="고급 벡터 확장입니다. (/arch:AVX)">
+  </EnumValue>
+  <EnumValue Name="AdvancedVectorExtensions2" Switch="arch:AVX2" DisplayName="고급 벡터 확장 2" Description="고급 벡터 확장 2입니다. (/arch:AVX2)">
+  </EnumValue>
+  <EnumValue Name="NoExtensions" Switch="arch:IA32" DisplayName="고급 명령 없음" Description="고급 명령이 없습니다. (/arch:IA32)">
+  </EnumValue>
+  <EnumValue Name="NotSet" Switch="" DisplayName="설정 안 함" Description="설정되지 않았습니다.">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="FloatingPointModel" DisplayName="부동 소수점 모델" Description="부동 소수점 모델을 설정합니다.     (/fp:precise, /fp:strict, /fp:fast)" Category="Code Generation" F1Keyword="VC.Project.VCCLCompilerTool.floatingPointModel">
+  <EnumValue Name="Precise" Switch="fp:precise" DisplayName="Precise" Description="기본값입니다. 같음과 다름에 대한 부동 소수점 테스트의 일관성을 향상시킵니다.">
+  </EnumValue>
+  <EnumValue Name="Strict" Switch="fp:strict" DisplayName="Strict" Description="가장 엄격한 부동 소수점 모델입니다. /fp:strict를 사용하면 fp_contract는 OFF가 되고 fenv_access는 ON이 됩니다. /fp:except가 포함되며 /fp:except-를 명시적으로 지정하여 사용할 수 없도록 설정할 수 있습니다. /fp:except-와 함께 사용할 경우 /fp:strict는 엄격한 부동 소수점 의미 체계를 적용하지만 예외 이벤트를 따르지는 않습니다.">
+  </EnumValue>
+  <EnumValue Name="Fast" Switch="fp:fast" DisplayName="Fast" Description="대부분의 경우 속도가 가장 빠른 코드를 만듭니다. ">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty ReverseSwitch="fp:except-" Name="FloatingPointExceptions" DisplayName="부동 소수점 예외 사용" Description="신뢰할 수 있는 부동 소수점 예외 모델입니다. 예외가 트리거되는 즉시 발생합니다.      (/fp:except)" Category="Code Generation" Switch="fp:except" F1Keyword="VC.Project.VCCLCompilerTool.FloatingPointExceptions">
+</BoolProperty>
+<BoolProperty Name="CreateHotpatchableImage" DisplayName="핫 패치 가능 이미지 만들기" Description="핫 패치 기능을 사용하는 경우 컴파일러가 각 함수의 첫 번째 명령을 핫 패치에 필요한 2바이트가 되도록 합니다.  (/hotpatch)" Category="Code Generation" Switch="hotpatch" F1Keyword="VC.Project.VCCLCompilerTool.CreateHotpatchableImage">
+</BoolProperty>
+<BoolProperty Name="DisableLanguageExtensions" DisplayName="언어 확장 사용 안 함" Description="언어 확장을 해제하거나 설정합니다.     (/Za)" Category="Language" Switch="Za" F1Keyword="VC.Project.VCCLCompilerTool.DisableLanguageExtensions">
+</BoolProperty>
+<BoolProperty ReverseSwitch="Zc:wchar_t-" Name="TreatWChar_tAsBuiltInType" DisplayName="WChar_t를 기본 제공 형식으로 처리" Description="이 옵션을 지정하면 short가 __int16에 매핑되는 것과 동일한 방식으로, wchar_t 형식이 __wchar_t에 매핑되는 네이티브 형식이 됩니다. /Zc:wchar_t가 기본적으로 설정됩니다." Category="Language" Switch="Zc:wchar_t" F1Keyword="VC.Project.VCCLCompilerTool.TreatWChar_tAsBuiltInType">
+</BoolProperty>
+<BoolProperty ReverseSwitch="Zc:forScope-" Name="ForceConformanceInForLoopScope" DisplayName="For 루프 범위 강제 규칙" Description="Microsoft 확장으로 for 문 루프의 표준 C++ 동작을 구현하기 위해 사용됩니다(/Za, /Ze(언어 확장 사용 안 함)). /Zc:forScope가 기본적으로 설정됩니다." Category="Language" Switch="Zc:forScope" F1Keyword="VC.Project.VCCLCompilerTool.ForceConformanceInForLoopScope">
+</BoolProperty>
+<BoolProperty Name="RemoveUnreferencedCodeData" DisplayName="참조되지 않은 코드 및 데이터 제거" Description="지정한 경우 컴파일러에서 참조되지 않은 코드 및 데이터에 대한 기호 정보를 더 이상 생성하지 않습니다." Category="Language" Switch="Zc:inline" F1Keyword="VC.Project.VCCLCompilerTool.RemoveUnreferencedCodeData">
+</BoolProperty>
+<BoolProperty ReverseSwitch="Zc:rvalueCast-" Name="EnforceTypeConversionRules" DisplayName="강제 형식 변환 규칙" Description="C++11 표준에 따라 캐스트 연산 결과로 rvalue 참조 형식을 파악할 때 사용합니다." Category="Language" Switch="Zc:rvalueCast" F1Keyword="VC.Project.VCCLCompilerTool.EnforceTypeConversionRules">
+</BoolProperty>
+<BoolProperty ReverseSwitch="GR-" Name="RuntimeTypeInfo" DisplayName="런타임 형식 정보 사용" Description="런타임에 C++ 개체의 형식(런타임 형식 정보)을 검사하는 코드를 추가합니다.     (/GR, /GR-)" Category="Language" Switch="GR" F1Keyword="VC.Project.VCCLCompilerTool.RuntimeTypeInfo">
+</BoolProperty>
+<BoolProperty ReverseSwitch="openmp-" Name="OpenMPSupport" DisplayName="OpenMP 지원" Description="OpenMP 2.0 언어 확장을 사용합니다.     (/openmp)" Category="Language" Switch="openmp" F1Keyword="VC.Project.VCCLCompilerTool.OpenMP">
+</BoolProperty>
+<EnumProperty Name="PrecompiledHeader" DisplayName="미리 컴파일된 헤더" Description="미리 컴파일된 헤더 만들기/사용 : 빌드하는 동안 미리 컴파일된 헤더를 만들거나 사용합니다.     (/Yc, /Yu)" Category="Precompiled Headers" F1Keyword="VC.Project.VCCLCompilerTool.UsePrecompiledHeader">
+  <EnumValue Name="Create" Switch="Yc" DisplayName="만들기" Description="컴파일러가 특정 지점에 컴파일 상태를 나타내는 미리 컴파일된 헤더(.pch) 파일을 만들도록 지시합니다.">
+    <Argument Property="PrecompiledHeaderFile" IsRequired="false"/>
+  </EnumValue>
+  <EnumValue Name="Use" Switch="Yu" DisplayName="사용" Description="컴파일러가 현재 컴파일에서 기존의 미리 컴파일된 헤더(.pch) 파일을 사용하도록 지시합니다.">
+    <Argument Property="PrecompiledHeaderFile" IsRequired="false"/>
+  </EnumValue>
+  <EnumValue Name="NotUsing" Switch="" DisplayName="미리 컴파일된 헤더 사용 안 함" Description="미리 컴파일된 헤더를 사용하지 않습니다. ">
+  </EnumValue>
+</EnumProperty>
+<StringProperty Subtype="file" Name="PrecompiledHeaderFile" DisplayName="미리 컴파일된 헤더 파일" Description="미리 컴파일된 헤더 파일을 만들거나 사용할 때 사용할 헤더 파일 이름을 지정합니다. (/Yc[name], /Yu[name])" Category="Precompiled Headers" F1Keyword="VC.Project.VCCLCompilerTool.PrecompiledHeaderThrough">
+</StringProperty>
+<StringProperty Subtype="file" Name="PrecompiledHeaderOutputFile" DisplayName="미리 컴파일된 헤더 출력 파일" Description="생성된 미리 컴파일된 헤더 파일의 경로 및/또는 이름을 지정합니다. (/Fp[name])" Category="Precompiled Headers" Switch="Fp" F1Keyword="VC.Project.VCCLCompilerTool.PrecompiledHeaderFile">
+</StringProperty>
+<BoolProperty Name="ExpandAttributedSource" DisplayName="특성 사용 소스 확장" Description="소스 파일에 확장된 특성을 삽입한 목록 파일을 만듭니다.     (/Fx)" Category="Output Files" Switch="Fx" F1Keyword="VC.Project.VCCLCompilerTool.ExpandAttributedSource">
+</BoolProperty>
+<EnumProperty Name="AssemblerOutput" DisplayName="어셈블러 출력" Description="어셈블리 언어 출력 파일의 내용을 지정합니다.     (/FA, /FAc, /FAs, /FAcs)" Category="Output Files" F1Keyword="VC.Project.VCCLCompilerTool.AssemblerOutput">
+  <EnumValue Name="NoListing" Switch="" DisplayName="목록 없음" Description="목록을 표시하지 않습니다. ">
+  </EnumValue>
+  <EnumValue Name="AssemblyCode" Switch="FA" DisplayName="어셈블리 전용 목록" Description="어셈블리 코드; .asm">
+  </EnumValue>
+  <EnumValue Name="AssemblyAndMachineCode" Switch="FAc" DisplayName="기계어 코드로 된 어셈블리" Description="기계어 및 어셈블리 코드; .cod">
+  </EnumValue>
+  <EnumValue Name="AssemblyAndSourceCode" Switch="FAs" DisplayName="소스 코드로 구성된 어셈블리" Description="소스 및 어셈블리 코드; .asm">
+  </EnumValue>
+  <EnumValue Name="All" Switch="FAcs" DisplayName="어셈블리, 기계어 코드, 소스" Description="어셈블리, 기계어 코드 및 소스 코드; .cod">
+  </EnumValue>
+</EnumProperty>
+<BoolProperty Name="UseUnicodeForAssemblerListing" DisplayName="어셈블러 목록에 유니코드 사용" Description="출력 파일을 UTF-8 형식으로 만듭니다. " Category="Output Files" Switch="FAu" F1Keyword="VC.Project.VCCLCompilerTool.UseUnicodeForAssemblerListing">
+</BoolProperty>
+<StringProperty Subtype="file" Name="AssemblerListingLocation" DisplayName="ASM 목록 위치" Description="ASM 목록 파일의 상대 경로 및/또는 이름을 지정합니다. 파일 또는 디렉터리 이름이 될 수 있습니다.     (/Fa[name])" Category="Output Files" Switch="Fa" F1Keyword="VC.Project.VCCLCompilerTool.AssemblerListingLocation">
+</StringProperty>
+<StringProperty Subtype="file" Name="ProgramDataBaseFileName" DisplayName="프로그램 데이터베이스 파일 이름" Description="컴파일러 생성 PDB 파일 이름을 지정합니다. 또한 필요한 컴파일러 생성 IDB 파일의 기본 이름도 지정합니다. 파일 또는 디렉터리 이름이 될 수 있습니다.     (/Fd[name])" Category="Output Files" Switch="Fd" F1Keyword="VC.Project.VCCLCompilerTool.ProgramDataBaseFileName">
+</StringProperty>
+<BoolProperty Name="GenerateXMLDocumentationFiles" DisplayName="XML 문서 파일 생성" Description="컴파일러에서 XML 문서 주석 파일(.XDC)을 생성하도록 지정합니다.     (/doc)" Category="Output Files" Switch="doc" F1Keyword="VC.Project.VCCLCompilerTool.GenerateXMLDocumentationFiles">
+  <Argument Property="XMLDocumentationFileName" IsRequired="false"/>
+</BoolProperty>
+<StringProperty Subtype="file" Name="XMLDocumentationFileName" DisplayName="XML 문서 파일 이름" Description="생성된 XML 문서 파일의 이름을 지정합니다. 파일 또는 디렉터리 이름이 될 수 있습니다.     (/doc[name])" Category="Output Files" F1Keyword="VC.Project.VCCLCompilerTool.XMLDocumentationFileName">
+</StringProperty>
+<BoolProperty Name="BrowseInformation" DisplayName="찾아보기 정보 사용" Description="찾아보기 정보 사용 : .bsc 파일에 찾아보기 정보 수준을 지정합니다.     (/FR)" Category="Browse Information" Switch="FR" F1Keyword="VC.Project.VCCLCompilerTool.BrowseInformation">
+  <Argument Property="BrowseInformationFile" IsRequired="false"/>
+</BoolProperty>
+<StringProperty Subtype="file" Name="BrowseInformationFile" DisplayName="찾아보기 정보 파일" Description="찾아보기 파일 : 찾아보기 정보 파일의 이름(선택 사항)을 지정합니다.     (/FR[name])" Category="Browse Information" F1Keyword="VC.Project.VCCLCompilerTool.BrowseInformationFile">
+</StringProperty>
+<EnumProperty Name="CallingConvention" DisplayName="호출 규칙" Description="응용 프로그램에 대한 기본 호출 규칙을 선택합니다(함수로 재정의할 수 있음).     (/Gd, /Gr, /Gz, /Gv)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CallingConvention">
+  <EnumValue Name="Cdecl" Switch="Gd" DisplayName="__cdecl" Description="C++ 멤버 함수와 __stdcall 또는 __fastcall로 표시된 함수를 제외한 모든 함수에 대해 __cdecl 호출 규칙을 지정합니다.">
+  </EnumValue>
+  <EnumValue Name="FastCall" Switch="Gr" DisplayName="__fastcall" Description="C++ 멤버 함수와 __cdecl 또는 __stdcall로 표시된 함수를 제외한 모든 함수에 대해 __fastcall 호출 규칙을 지정합니다. 모든 __fastcall 함수에는 프로토타입이 있어야 합니다.">
+  </EnumValue>
+  <EnumValue Name="StdCall" Switch="Gz" DisplayName="__stdcall" Description="C++ 멤버 함수와 __cdecl 또는 __fastcall로 표시된 함수를 제외한 모든 함수에 대해 __stdcall 호출 규칙을 지정합니다. 모든 __stdcall 함수에는 프로토타입이 있어야 합니다.">
+  </EnumValue>
+  <EnumValue Name="VectorCall" Switch="Gv" DisplayName="__vectorcall" Description="C++ 멤버 함수와 __cdecl, __fastcall 또는 __stdcall로 표시된 함수를 제외한 모든 함수에 대해 __vectorcall 호출 규칙을 지정합니다. 모든 __vectorcall 함수에는 프로토타입이 있어야 합니다.">
+  </EnumValue>
+</EnumProperty>
+<EnumProperty Name="CompileAs" DisplayName="컴파일 옵션" Description=".c 및 .cpp 파일에 대한 컴파일 언어 옵션을 선택합니다.     (/TC, /TP)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CompileAs">
+  <EnumValue Name="Default" Switch="" DisplayName="기본값" Description="기본값입니다.">
+  </EnumValue>
+  <EnumValue Name="CompileAsC" Switch="TC" DisplayName="C 코드로 컴파일" Description="C 코드로 컴파일합니다.">
+  </EnumValue>
+  <EnumValue Name="CompileAsCpp" Switch="TP" DisplayName="C++ 코드로 컴파일" Description="C++ 코드로 컴파일합니다.">
+  </EnumValue>
+</EnumProperty>
+<StringListProperty Name="DisableSpecificWarnings" DisplayName="특정 경고 사용 안 함" Description="원하는 경고 번호를 사용하지 않도록 설정합니다. 세미콜론으로 구분된 목록에 경고 번호를 입력합니다.     (/wd[num])" Category="Advanced" Switch="wd" F1Keyword="VC.Project.VCCLCompilerTool.DisableSpecificWarnings">
+</StringListProperty>
+<StringListProperty Subtype="file" Name="ForcedIncludeFiles" DisplayName="강제 포함 파일" Description="하나 이상의 강제 포함 파일입니다.     (/FI[name])" Category="Advanced" Switch="FI" F1Keyword="VC.Project.VCCLCompilerTool.ForcedIncludeFiles">
+</StringListProperty>
+<StringListProperty Subtype="file" Name="ForcedUsingFiles" DisplayName="강제 #using 파일" Description="하나 이상의 강제 #using 파일을 지정합니다.     (/FU[name])" Category="Advanced" Switch="FU" F1Keyword="VC.Project.VCCLCompilerTool.ForcedUsingFiles">
+</StringListProperty>
+<BoolProperty Name="ShowIncludes" DisplayName="포함 표시" Description="컴파일러 출력으로 포함 파일 목록을 생성합니다.     (/showIncludes)" Category="Advanced" Switch="showIncludes" F1Keyword="VC.Project.VCCLCompilerTool.ShowIncludes">
+</BoolProperty>
+<BoolProperty ReverseSwitch="analyze-" Name="EnablePREfast" DisplayName="코드 분석 사용" Description="C/C++ 코드에서 일반적인 코딩 오류를 식별하는 코드 분석 기능을 사용하도록 설정합니다.     (/analyze)" Category="Advanced" Switch="analyze" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
+</BoolProperty>
+<StringProperty Subtype="file" Name="PREfastLog" DisplayName="코드 분석 로그" Description="출력 파일의 이름을 지정합니다.     (/analyze:log)" Category="Advanced" Switch="analyze:log " Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
+</StringProperty>
+<StringListProperty Name="PREfastAdditionalOptions" DisplayName="추가 코드 분석 네이티브 옵션" Description="코드 분석에 사용할 추가 옵션입니다." Category="Advanced" Switch="analyze:" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalOptions">
+</StringListProperty>
+<StringListProperty Name="PREfastAdditionalPlugins" DisplayName="추가 코드 분석 네이티브 플러그 인" Description="코드 분석에 사용할 추가 플러그 인입니다.     (/analyze:plugin[plugin1.dll])" Category="Advanced" Switch="analyze:plugin" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalPlugins">
+</StringListProperty>
+<BoolProperty Name="UseFullPaths" DisplayName="전체 경로 사용" Description="진단 메시지에 전체 경로를 사용합니다.     (/FC)" Category="Advanced" Switch="FC" F1Keyword="VC.Project.VCCLCompilerTool.UseFullPaths">
+</BoolProperty>
+<BoolProperty Name="OmitDefaultLibName" DisplayName="기본 라이브러리 이름 생략" Description=".obj 파일에 기본 라이브러리 이름을 포함하지 않습니다.     (/Zl)" Category="Advanced" Switch="Zl" F1Keyword="VC.Project.VCCLCompilerTool.OmitDefaultLibName">
+</BoolProperty>
+<EnumProperty Name="ErrorReporting" DisplayName="내부 컴파일러 오류 보고" Description="내부 도구 오류를 Microsoft에 보고하는 방법을 지정합니다.  IDE의 기본값은 프롬프트입니다.  명령줄 빌드의 기본값은 큐입니다.     (/errorReport:[method])" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.ErrorReporting">
+  <EnumValue Name="None" Switch="errorReport:none" DisplayName="보고서 보내지 않음" Description="내부 컴파일러 오류에 대한 보고서를 수집하거나 Microsoft로 보내지 않습니다.">
+  </EnumValue>
+  <EnumValue Name="Prompt" Switch="errorReport:prompt" DisplayName="즉시 프롬프트 표시" Description="내부 컴파일러 오류가 발생하면 보고서를 보낼지 묻는 메시지를 표시합니다.">
+  </EnumValue>
+  <EnumValue Name="Queue" Switch="errorReport:queue" DisplayName="다음 로그인으로 대기" Description="오류 보고서를 대기시킵니다. 관리자 권한으로 로그인하면 팝업 창이 표시되고 마지막으로 로그인한 이후에 발생한 모든 오류를 보고할 수 있습니다(한 번 표시된 후에는 3일 동안 메시지가 다시 표시되지 않음). 명령줄에서 응용 프로그램을 컴파일하는 경우 대기가 기본값입니다.">
+  </EnumValue>
+  <EnumValue Name="Send" Switch="errorReport:send" DisplayName="자동으로 보내기" Description="내부 컴파일러 오류 보고서를 자동으로 Microsoft에 보냅니다. 이 옵션을 사용하려면 먼저 Microsoft%27s 데이터 수집 정책에 동의해야 합니다. 컴퓨터에서 /errorReport:send를 처음 지정한 경우 Microsoft%27s 데이터 수집 정책 웹 사이트로 안내하는 컴파일러 메시지가 나타납니다.">
+  </EnumValue>
+</EnumProperty>
+<StringListProperty Name="TreatSpecificWarningsAsErrors" DisplayName="특정 경고를 오류로 처리" Description="특정 컴파일러 경고를 오류로 처리합니다(n은 컴파일러 경고)." Category="Advanced" Switch="we" F1Keyword="VC.Project.VCCLCompilerTool.TreatSpecificWarningsAsErrors">
+</StringListProperty>
+<BoolProperty Name="BuildingInIde" Visible="false">
+</BoolProperty>
+-->
+  </Rule>
+</ProjectSchemaDefinitions>

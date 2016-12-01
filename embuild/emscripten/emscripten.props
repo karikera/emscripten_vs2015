@@ -1,0 +1,58 @@
+﻿<!--
+***********************************************************************************************
+Platform.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LIBToolExe>embuild.exe</LIBToolExe>
+    <LIBToolPath></LIBToolPath>
+    <LinkToolExe>embuild.exe</LinkToolExe>
+    <LinkToolPath></LinkToolPath>
+    <CLToolExe>embuild.exe</CLToolExe>
+    <CLToolPath></CLToolPath>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess]</VEMCommonArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ConfigurationType)'=='StaticLibrary'">
+    <TargetExt>.bc</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ConfigurationType)'=='Application'">
+    <TargetExt>.html</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <JS>
+      <CommandLineTemplate>@echo Import [Sources]</CommandLineTemplate>
+    </JS>
+    <ClCompile>
+      <PreprocessorDefinitions>__EMSCRIPTEN__;__SSE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CommandLineTemplate>@"[ToolExe]" [ObjectFileName] [PreprocessorDefinitions] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <Optimization>Disabled</Optimization>
+      <ISOStandard>CPP14</ISOStandard>
+      <Encoding>UTF-8</Encoding>
+      <DebugInformationFormat>Max</DebugInformationFormat>
+      <BuildOutput>FileName</BuildOutput>
+    </ClCompile>
+    <Lib>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <BuildOutput>FileName</BuildOutput>
+    </Lib>
+    <Link>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [DebugInformationFormat] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <DebugInformationFormat>Max</DebugInformationFormat>
+      <BuildOutput>FileName</BuildOutput>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)' == 'Release'">
+    <ClCompile>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

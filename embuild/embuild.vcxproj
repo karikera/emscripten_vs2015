@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B5FF482D-35F5-430C-9382-178C9DE46730}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>emscripten_release</RootNamespace>
+    <ProjectName>embuild</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ken-bin\KR.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+mkdir %InstallerDir% 2&gt;NUL
+xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
+xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
+mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
+copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
+copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+mkdir %InstallerDir% 2&gt;NUL
+xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
+xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
+mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
+copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
+copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+mkdir %InstallerDir% 2&gt;NUL
+xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
+xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
+mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
+copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
+copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+mkdir %InstallerDir% 2&gt;NUL
+xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
+xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
+mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
+copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
+copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tlog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="tlog.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="installer\install.bat" />
+    <None Include="template.html" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
