@@ -1,0 +1,3 @@
+[submodule "ken-bin"]
+	path = ken-bin
+	url = https://github.com/karikera/ken-bin.git
