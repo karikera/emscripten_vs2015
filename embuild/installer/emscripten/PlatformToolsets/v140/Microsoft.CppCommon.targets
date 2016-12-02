@@ -1,0 +1,647 @@
+﻿<!--
+***********************************************************************************************
+Microsoft.CppCommon.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps/targets common to building Visual C++ projects.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+  <!-- Yield optimization properties -->
+    <YieldDuringToolExecution Condition="'$(YieldDuringToolExecution)' == ''">true</YieldDuringToolExecution>
+    <ClYieldDuringToolExecution Condition="'$(ClYieldDuringToolExecution)' == ''">$(YieldDuringToolExecution)</ClYieldDuringToolExecution>
+    <MidlYieldDuringToolExecution Condition="'$(MidlYieldDuringToolExecution)' == ''">$(YieldDuringToolExecution)</MidlYieldDuringToolExecution>
+  </PropertyGroup>
+
+  <!-- Define the Target Macros-->
+  <PropertyGroup>
+    <!-- If OutDir was set outside of the project file, then we will append ProjectName -->
+    <OutDir Condition="'$(OutDirWasSpecified)' == 'true' and (('$(WindowsAppContainer)' == 'true' and '$(GenerateProjectSpecificOutputFolder)' != 'false') or '$(GenerateProjectSpecificOutputFolder)' == 'true')">$(OutDir)$(ProjectName)\</OutDir>
+    
+    <!-- Correct OutputPath as it may be out of sync with OutDir -->
+    <OutputPath>$(OutDir)</OutputPath>
+    
+    <TargetPath Condition="'$(TargetPath)' == ''">$([System.IO.Path]::Combine($(ProjectDir),$(OutDir)$(TargetName)$(TargetExt)))</TargetPath>
+    <TargetFileName Condition=" '$(TargetFileName)'=='' ">$([System.IO.Path]::GetFileName('$(TargetPath)'))</TargetFileName>
+    <TargetDir      Condition=" '$(TargetDir)'==''"      >$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))</TargetDir>
+    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)'==''">$(MSBuildThisFileDirectory)bin\nwjs-v0.14.7-win-ia32\nw.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(LocalDebuggerCommandArguments)'==''">"$(TargetDir)"</LocalDebuggerCommandArguments>
+    <ExtensionsToDeleteOnClean>$(ExtensionsToDeleteOnClean);$(TargetPath).manifest;$(OutDir)$(TargetName).tlb;$(OutDir)$(TargetName).pdb;$(TargetPath);$(OutDir)$(TargetName).bsc;$(OutDir)$(TargetName).ilk;$(TargetPath).intermediate.manifest</ExtensionsToDeleteOnClean>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)'==''">$(IntDir)</IntermediateOutputPath>
+
+    <!-- Set AppxPackageDir before OutDirWasSpecified is set false -->
+    <AppxPackageDir Condition=" '$(OutDirWasSpecified)' == 'true' ">$(OutDir)AppPackages\</AppxPackageDir>
+    
+    <!-- After OutDir has been fixed, disable Microsoft.common.targets from fixing it again -->
+    <OutDirWasSpecified>false</OutDirWasSpecified>
+
+    <!-- Enable incremental build by enable file tracking in tasks-->
+    <TrackFileAccess Condition="'$(TrackFileAccess)' == ''">true</TrackFileAccess>
+  </PropertyGroup>
+
+  <!--
+  Link.exe can now embed manifest.  This helps the build avoid the double linking.  The build will pretend that it is embedding by MT, but instead
+  of passing MT the embed command, it will pass it them to link.exe via /manifest:embed and /manifestinput.  MT will still run incase there are other utilities 
+  MT provides.
+  
+  To revert back to the old behavior set $(LegacyManifestEmbedding) to true.
+  -->
+  
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.CppBuild.targets"/>
+
+  <UsingTask TaskName="VCMessage"     AssemblyFile="$(VCTargetsPath)\Microsoft.Build.CppTasks.Common.dll" />
+  <UsingTask TaskName="CustomBuild"   AssemblyFile="$(VCTargetsPath)\Microsoft.Build.CppTasks.Common.dll"/>
+  <UsingTask
+		TaskName="LIB"
+		TaskFactory="XamlTaskFactory"
+		AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <Task>$(MSBuildThisFileDirectory)lib.xml</Task>
+  </UsingTask>
+	<UsingTask
+		TaskName="CL"
+		TaskFactory="XamlTaskFactory"
+		AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+		<Task>$(MSBuildThisFileDirectory)cl.xml</Task>
+	</UsingTask>
+  <UsingTask
+		TaskName="Link"
+		TaskFactory="XamlTaskFactory"
+		AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <Task>$(MSBuildThisFileDirectory)link.xml</Task>
+  </UsingTask>
+  <UsingTask
+		TaskName="JS"
+		TaskFactory="XamlTaskFactory"
+		AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <Task>$(MSBuildThisFileDirectory)js.xml</Task>
+  </UsingTask>
+
+  <!-- *******************************************************************************************
+        AvailableItemName
+       ******************************************************************************************* -->
+  <!-- Creates a connection between item names and the targets to build them. -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)js.xml" />
+    <AvailableItemName Include="JS">
+      <Targets>JS</Targets>
+    </AvailableItemName>
+    <AvailableItemName Include="ClCompile">
+      <Targets>ClCompile</Targets>
+    </AvailableItemName>
+    <AvailableItemName Include="CustomBuild">
+      <Targets>CustomBuild</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+
+  <!-- *******************************************************************************************
+        Build Events
+       ******************************************************************************************* -->
+  <PropertyGroup>
+    <_BuildSuffix>
+:VCEnd</_BuildSuffix>
+  </PropertyGroup>
+
+  <Target Name="PreBuildEvent" Condition="'$(PreBuildEventUseInBuild)'!='false'">
+    <Message Text="Description: %(PreBuildEvent.Message)" Condition="'%(PreBuildEvent.Message)' != '' and '%(PreBuildEvent.Command)' != ''"/>
+    <Exec Command="%(PreBuildEvent.Command)$(_BuildSuffix)" Condition="'%(PreBuildEvent.Command)' != ''"/>
+  </Target>
+
+  <Target Name="PreLinkEvent" Condition="'$(PreLinkEventUseInBuild)'!='false'">
+    <Message Text="Description: %(PreLinkEvent.Message)" Condition="'%(PreLinkEvent.Message)' != '' and '%(PreLinkEvent.Command)' != ''"/>
+    <Exec Command="%(PreLinkEvent.Command)$(_BuildSuffix)" Condition="'%(PreLinkEvent.Command)' != ''"/>
+  </Target>
+
+  <Target Name="PostBuildEvent" Condition="'$(PostBuildEventUseInBuild)'!='false'">
+    <Message Text="Description: %(PostBuildEvent.Message)" Condition="'%(PostBuildEvent.Message)' != '' and '%(PostBuildEvent.Command)' != ''"/>
+    <Exec Command="%(PostBuildEvent.Command)$(_BuildSuffix)" Condition="'%(PostBuildEvent.Command)' != ''"/>
+  </Target>
+
+  <!-- *******************************************************************************************
+        Custom Build
+       ******************************************************************************************* -->
+  <PropertyGroup Condition="'$(CustomBuildAfterTargets)'!='' or '$(CustomBuildBeforeTargets)'!=''">
+    <CustomBuildToolBeforeTargets>$(CustomBuildBeforeTargets)</CustomBuildToolBeforeTargets>
+    <CustomBuildToolAfterTargets>$(CustomBuildAfterTargets)</CustomBuildToolAfterTargets>
+  </PropertyGroup>
+
+  <!--If no before/after targets are set, then set the default-->
+  <PropertyGroup Condition="'$(CustomBuildAfterTargets)'=='' and '$(CustomBuildBeforeTargets)'==''">
+    <CustomBuildToolBeforeTargets>Midl</CustomBuildToolBeforeTargets>
+    <CustomBuildToolAfterTargets>PreBuildEvent</CustomBuildToolAfterTargets>
+    <CustomBuildBeforeTargets>PostBuildEvent</CustomBuildBeforeTargets>
+    <CustomBuildAfterTargets>BscMake</CustomBuildAfterTargets>
+  </PropertyGroup>
+
+  <!--  If Selective File Build is enabled, then dont let custom interupt the build order-->
+  <PropertyGroup Condition="'$(SelectedFiles)'!=''">
+    <CustomBuildToolBeforeTargets></CustomBuildToolBeforeTargets>
+    <CustomBuildToolAfterTargets></CustomBuildToolAfterTargets>
+    <CustomBuildBeforeTargets></CustomBuildBeforeTargets>
+    <CustomBuildAfterTargets></CustomBuildAfterTargets>
+  </PropertyGroup>
+
+  <Target Name="CustomBuild"
+          Condition="'@(CustomBuild)' != ''"
+          DependsOnTargets="SelectCustomBuild;ComputeCustomBuildOutput"
+          BeforeTargets="$(CustomBuildToolBeforeTargets)"
+          AfterTargets="$(CustomBuildToolAfterTargets)"
+          >
+
+    <PropertyGroup>
+      <CustomBuildToolArchitecture Condition="'$(CustomBuildToolArchitecture)' == ''">Native32Bit</CustomBuildToolArchitecture>
+    </PropertyGroup>
+
+    <CustomBuild
+      Sources                     ="@(CustomBuild)"
+      BuildSuffix                 ="$(_BuildSuffix)"
+
+      TrackerLogDirectory         ="%(CustomBuild.TrackerLogDirectory)"
+      MinimalRebuildFromTracking  ="%(CustomBuild.MinimalRebuildFromTracking)"
+
+      TLogReadFiles               ="@(CustomBuildTLogReadFiles)"
+      TLogWriteFiles              ="@(CustomBuildTLogWriteFiles)"
+      TrackFileAccess             ="$(TrackFileAccess)"
+      
+      ToolArchitecture            ="$(CustomBuildToolArchitecture)"
+      TrackerFrameworkPath        ="$(CustomBuildTrackerFrameworkPath)"
+      TrackerSdkPath              ="$(CustomBuildTrackerSdkPath)"
+
+      AcceptableNonZeroExitCodes  ="%(CustomBuild.AcceptableNonZeroExitCodes)"
+      >
+    </CustomBuild>
+  </Target>
+
+  <Target Name="CustomBuildStep"
+          Condition="'@(CustomBuildStep)' != '' and '$(SelectedFiles)'==''"
+          Inputs="%(CustomBuildStep.Inputs);$(ProjectFileName)"
+          Outputs="%(CustomBuildStep.Outputs)"
+          DependsOnTargets="ComputeCustomBuildOutput"
+          BeforeTargets="$(CustomBuildBeforeTargets)"
+          AfterTargets="$(CustomBuildAfterTargets)"
+          >
+    <Message Text="Description: %(CustomBuildStep.Message)" Condition="%(CustomBuildStep.Message) != ''"/>
+
+    <!-- Appended tlog to track custom build events -->
+    <WriteLinesToFile File="$(TLogLocation)$(ProjectName).write.1u.tlog" Lines="@(CustomBuildStep->'^%(Identity)');@(CustomBuildStep->MetaData('Outputs')->FullPath()->Distinct())" Encoding="Unicode"/>
+
+    <Exec Command="%(CustomBuildStep.Command)$(_BuildSuffix)" />
+  </Target>
+
+  <!-- *******************************************************************************************
+        CLCompile
+       ******************************************************************************************* -->
+
+  <PropertyGroup>
+    <ComputeCompileInputsTargets>
+      $(ComputeCompileInputsTargets);
+      FixupCLCompileOptions;
+    </ComputeCompileInputsTargets>
+  </PropertyGroup>
+
+  <Target Name="FixupCLCompileOptions"
+            Condition="'@(ClCompile)' != ''">
+    <ItemGroup>
+      <ClCompile>
+        <UseUnicodeForAssemblerListing Condition="'%(ClCompile.AssemblerOutput)' == 'NoListing' or '%(ClCompile.AssemblerOutput)' == ''"></UseUnicodeForAssemblerListing>
+        <AssemblerListingLocation      Condition="'%(ClCompile.AssemblerOutput)' == 'NoListing' or '%(ClCompile.AssemblerOutput)' == ''"></AssemblerListingLocation>
+        <CompileAs                     Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' == '.c'">CompileAsC</CompileAs>
+        <CompileAs                     Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' != '.c'">CompileAsCpp</CompileAs>
+        <MinimalRebuildFromTracking    Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
+        <WinRTNoStdLib                 Condition="'%(ClCompile.CompileAsWinRT)' != 'true'">false</WinRTNoStdLib>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ClCompile"
+          Condition="'@(ClCompile)' != ''"
+          DependsOnTargets="SelectClCompile">
+
+    <PropertyGroup>
+      <CLToolArchitecture Condition="'$(CLToolArchitecture)' == ''">$(VCToolArchitecture)</CLToolArchitecture>
+      <CLDeleteOutputOnExecute Condition="'$(CLDeleteOutputOnExecute)' == ''">true</CLDeleteOutputOnExecute>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ClNoDependencies Condition="'@(ClNoDependencies)' == '' and '%(ClInclude.NoDependency)' == 'true'" Include="@(ClInclude)"/>
+      <ClNoDependencies Condition="'$(NoDependencies)' != ''" Include="$(NoDependencies)" />
+    </ItemGroup>
+
+    <!-- Rest of the sources -->
+    <CL Condition="'%(ClCompile.ExcludedFromBuild)'!='true' and '%(ClCompile.CompilerIteration)' == '' and @(ClCompile) != ''"
+        BuildingInIDE                      ="$(BuildingInsideVisualStudio)"
+        Sources                            ="@(ClCompile)"
+        
+        CommandLineTemplate ="%(ClCompile.CommandLineTemplate)"
+        StandardOutputImportance ="High"
+        StandardErrorImportance ="High"
+        Encoding ="%(ClCompile.Encoding)"
+
+        PreprocessorDefinitions            ="%(ClCompile.PreprocessorDefinitions)"
+        AdditionalIncludeDirectories       ="%(ClCompile.AdditionalIncludeDirectories)"
+        AdditionalOptions                  ="%(ClCompile.AdditionalOptions)"
+        Optimization                       ="%(ClCompile.Optimization)"
+        ObjectFileName                     ="%(ClCompile.ObjectFileName)"
+        ToolExe                            ="$(CLToolExe)"
+        DebugInformationFormat ="%(ClCompile.DebugInformationFormat)"
+        BuildOutput ="%(ClCompile.BuildOutput)"
+        SuppressStartupBanner              ="%(ClCompile.SuppressStartupBanner)"
+
+        TrackerLogDirectory                ="%(ClCompile.TrackerLogDirectory)"
+        MinimalRebuildFromTracking         ="%(ClCompile.MinimalRebuildFromTracking)"
+        TrackFileAccess                    ="$(TrackFileAccess)"
+        
+        AcceptableNonZeroExitCodes         ="%(ClCompile.AcceptableNonZeroExitCodes)"
+        YieldDuringToolExecution           ="$(ClYieldDuringToolExecution)"
+    >
+    </CL>
+    <!--
+    
+        AdditionalUsingDirectories         ="%(ClCompile.AdditionalUsingDirectories)"
+        AssemblerListingLocation           ="%(ClCompile.AssemblerListingLocation)"
+        AssemblerOutput                    ="%(ClCompile.AssemblerOutput)"
+        BasicRuntimeChecks                 ="%(ClCompile.BasicRuntimeChecks)"
+        BrowseInformation                  ="%(ClCompile.BrowseInformation)"
+        BrowseInformationFile              ="%(ClCompile.BrowseInformationFile)"
+        BufferSecurityCheck                ="%(ClCompile.BufferSecurityCheck)"
+        CallingConvention                  ="%(ClCompile.CallingConvention)"
+        ControlFlowGuard                   ="%(ClCompile.ControlFlowGuard)"
+        CompileAsManaged                   ="%(ClCompile.CompileAsManaged)"
+        CompileAsWinRT                     ="%(ClCompile.CompileAsWinRT)"
+        CompileAs                          ="%(ClCompile.CompileAs)"
+        DebugInformationFormat             ="%(ClCompile.DebugInformationFormat)"
+        DisableLanguageExtensions          ="%(ClCompile.DisableLanguageExtensions)"
+        DisableSpecificWarnings            ="%(ClCompile.DisableSpecificWarnings)"
+        EnableEnhancedInstructionSet       ="%(ClCompile.EnableEnhancedInstructionSet)"
+        EnableFiberSafeOptimizations       ="%(ClCompile.EnableFiberSafeOptimizations)"
+        EnableParallelCodeGeneration       ="%(ClCompile.EnableParallelCodeGeneration)"
+        EnablePREfast                      ="%(ClCompile.EnablePREfast)"
+        EnforceTypeConversionRules         ="%(ClCompile.EnforceTypeConversionRules)"
+        ErrorReporting                     ="%(ClCompile.ErrorReporting)"
+        ExceptionHandling                  ="%(ClCompile.ExceptionHandling)"
+        ExcludedInputPaths                 ="$(ExcludePath)"
+        ExpandAttributedSource             ="%(ClCompile.ExpandAttributedSource)"
+        FavorSizeOrSpeed                   ="%(ClCompile.FavorSizeOrSpeed)"
+        FloatingPointExceptions            ="%(ClCompile.FloatingPointExceptions)"
+        FloatingPointModel                 ="%(ClCompile.FloatingPointModel)"
+        ForceConformanceInForLoopScope     ="%(ClCompile.ForceConformanceInForLoopScope)"
+        ForcedIncludeFiles                 ="%(ClCompile.ForcedIncludeFiles)"
+        ForcedUsingFiles                   ="%(ClCompile.ForcedUsingFiles)"
+        FunctionLevelLinking               ="%(ClCompile.FunctionLevelLinking)"
+        GenerateXMLDocumentationFiles      ="%(ClCompile.GenerateXMLDocumentationFiles)"
+        IgnoreStandardIncludePath          ="%(ClCompile.IgnoreStandardIncludePath)"
+        InlineFunctionExpansion            ="%(ClCompile.InlineFunctionExpansion)"
+        IntrinsicFunctions                 ="%(ClCompile.IntrinsicFunctions)"
+        MinimalRebuild                     ="%(ClCompile.MinimalRebuild)"
+        MultiProcessorCompilation          ="%(ClCompile.MultiProcessorCompilation)"
+        OmitDefaultLibName                 ="%(ClCompile.OmitDefaultLibName)"
+        OmitFramePointers                  ="%(ClCompile.OmitFramePointers)"
+        OpenMPSupport                      ="%(ClCompile.OpenMPSupport)"
+        PrecompiledHeader                  ="%(ClCompile.PrecompiledHeader)"
+        PrecompiledHeaderFile              ="%(ClCompile.PrecompiledHeaderFile)"
+        PrecompiledHeaderOutputFile        ="%(ClCompile.PrecompiledHeaderOutputFile)"
+        PREfastAdditionalOptions           ="%(ClCompile.PREfastAdditionalOptions)"
+        PREfastAdditionalPlugins           ="%(ClCompile.PREfastAdditionalPlugins)"
+        PREfastLog                         ="%(ClCompile.PREfastLog)"
+        PreprocessKeepComments             ="%(ClCompile.PreprocessKeepComments)"
+        PreprocessSuppressLineNumbers      ="%(ClCompile.PreprocessSuppressLineNumbers)"
+        PreprocessToFile                   ="%(ClCompile.PreprocessToFile)"
+        ProcessorNumber                    ="%(ClCompile.ProcessorNumber)"
+        ProgramDataBaseFileName            ="%(ClCompile.ProgramDataBaseFileName)"
+        RemoveUnreferencedCodeData         ="%(ClCompile.RemoveUnreferencedCodeData)"
+        RuntimeLibrary                     ="%(ClCompile.RuntimeLibrary)"
+        RuntimeTypeInfo                    ="%(ClCompile.RuntimeTypeInfo)"
+        SDLCheck                           ="%(ClCompile.SDLCheck)"
+        ShowIncludes                       ="%(ClCompile.ShowIncludes)"
+        WarningVersion                     ="%(ClCompile.WarningVersion)"
+        SmallerTypeCheck                   ="%(ClCompile.SmallerTypeCheck)"
+        StringPooling                      ="%(ClCompile.StringPooling)"
+        StructMemberAlignment              ="%(ClCompile.StructMemberAlignment)"
+        TreatSpecificWarningsAsErrors      ="%(ClCompile.TreatSpecificWarningsAsErrors)"
+        TreatWarningAsError                ="%(ClCompile.TreatWarningAsError)"
+        TreatWChar_tAsBuiltInType          ="%(ClCompile.TreatWChar_tAsBuiltInType)"
+        UndefineAllPreprocessorDefinitions ="%(ClCompile.UndefineAllPreprocessorDefinitions)"
+        UndefinePreprocessorDefinitions    ="%(ClCompile.UndefinePreprocessorDefinitions)"
+        UseFullPaths                       ="%(ClCompile.UseFullPaths)"
+        UseUnicodeForAssemblerListing      ="%(ClCompile.UseUnicodeForAssemblerListing)"
+        WarningLevel                       ="%(ClCompile.WarningLevel)"
+        WholeProgramOptimization           ="%(ClCompile.WholeProgramOptimization)"
+        WinRTNoStdLib                      ="%(ClCompile.WinRTNoStdLib)"
+        XMLDocumentationFileName           ="%(ClCompile.XMLDocumentationFileName)"
+        CreateHotpatchableImage            ="%(CLCompile.CreateHotpatchableImage)"
+
+        TLogReadFiles                      ="@(CLTLogReadFiles)"
+        TLogWriteFiles                     ="@(CLTLogWriteFiles)"
+        
+        ToolPath                           ="$(CLToolPath)"
+        ToolArchitecture                   ="$(CLToolArchitecture)"
+        TrackerFrameworkPath               ="$(CLTrackerFrameworkPath)"
+        TrackerSdkPath                     ="$(CLTrackerSdkPath)"
+        TrackedInputFilesToIgnore          ="@(ClNoDependencies)"
+        DeleteOutputOnExecute              ="$(CLDeleteOutputOnExecute)"
+    -->
+    <OnError Condition="'$(OnXamlPreCompileErrorTarget)' != ''" ExecuteTargets="$(OnXamlPreCompileErrorTarget)" />
+  </Target>
+
+  <Target Name="JS"
+          Condition="'@(JS)' != ''"
+          DependsOnTargets="SelectClCompile">
+
+    <!-- Rest of the sources -->
+    <JS Condition="'%(JS.ExcludedFromBuild)'!='true' and '%(JS.CompilerIteration)' == '' and @(JS) != ''"
+        Sources                            ="@(JS)"
+        
+        CommandLineTemplate ="%(JS.CommandLineTemplate)"
+        StandardOutputImportance ="High"
+        StandardErrorImportance ="High"
+
+        AcceptableNonZeroExitCodes         ="%(JS.AcceptableNonZeroExitCodes)"
+        YieldDuringToolExecution           ="$(ClYieldDuringToolExecution)"
+    >
+    </JS>
+    <OnError Condition="'$(OnXamlPreCompileErrorTarget)' != ''" ExecuteTargets="$(OnXamlPreCompileErrorTarget)" />
+  </Target>
+
+  <!-- *******************************************************************************************
+        Link
+       ******************************************************************************************* -->
+
+  <Target Name="ComputeLinkSwitches"
+          Condition="'@(Link)' != ''">
+
+    <ItemGroup>
+      <_EmbedManagedResourceFile Include="@(Link->Metadata('EmbedManagedResourceFile')->Distinct())" />
+      <_EmbedManagedResourceFile Include="@(Link->Metadata('AddModuleNamesToAssembly')->Distinct())" />
+      <_EmbedManagedResourceFile Condition="'%(EmbeddedResource.LogicalName)' == '' and '%(EmbeddedResource.WithCulture)' != 'true' and '%(EmbeddedResource.ExcludedFromBuild)' != 'true'" Include="@(EmbeddedResource->'$(IntermediateOutputPath)%(ManifestResourceName).resources')" />
+      <_EmbedManagedResourceFile Condition="'%(EmbeddedResource.LogicalName)' != '' and '%(EmbeddedResource.WithCulture)' != 'true' and '%(EmbeddedResource.ExcludedFromBuild)' != 'true'" Include="@(EmbeddedResource->'$(IntermediateOutputPath)%(ManifestResourceName).resources,%(LogicalName)')" />
+      <Link Include="@(ResObjMt->WithMetadataValue('LinkCompiled', 'true')->ClearMetadata())" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <Link_MinimalRebuildFromTracking Condition="'@(Link->AnyHaveMetadataValue('MinimalRebuildFromTracking', 'false'))' == 'true'">false</Link_MinimalRebuildFromTracking>
+      <Link_MinimalRebuildFromTracking Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'" >false</Link_MinimalRebuildFromTracking>
+      <Link_MinimalRebuildFromTracking Condition="'$(Link_MinimalRebuildFromTracking)' == ''">true</Link_MinimalRebuildFromTracking>
+      <LinkToolArchitecture Condition="'$(LinkToolArchitecture)' == ''">$(VCToolArchitecture)</LinkToolArchitecture>
+      <LinkYieldDuringToolExecution Condition="'$(LinkYieldDuringToolExecution)' == '' and '%(Link.LinkTimeCodeGeneration)' == 'UseLinkTimeCodeGeneration'">true</LinkYieldDuringToolExecution>
+      <_GenerateWindowsMetadata Condition="'$(_GenerateWindowsMetadata)' == '' and '$(OnlyCreateWinMD)' == 'true' and '$(GenerateBuildCompilePassWinMD)' == 'true'">false</_GenerateWindowsMetadata>
+      <_GenerateWindowsMetadata Condition="'$(_GenerateWindowsMetadata)' == ''">%(Link.GenerateWindowsMetadata)</_GenerateWindowsMetadata>
+
+      <!-- Compile's ControlFlowGuard needs to enable guard:cf on linker -->
+      <LinkControlFlowGuard Condition="'$(LinkControlFlowGuard)' == '' and '@(ClCompile)' != '' and '@(ClCompile->AnyHaveMetadataValue('ControlFlowGuard', 'Guard'))' == 'true'">Guard</LinkControlFlowGuard>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="Link"
+          Condition="'@(Link)' != ''"
+          DependsOnTargets="ComputeLinkSwitches">
+
+    <ItemGroup>
+      <Link>
+        <ProfileGuidedDatabase Condition="'%(Link.LinkTimeCodeGeneration)' != 'PGOptimization' and
+                                          '%(Link.LinkTimeCodeGeneration)' != 'PGUpdate' and
+                                          '%(Link.LinkTimeCodeGeneration)' != 'PGInstrument'"></ProfileGuidedDatabase>
+        <ManifestEmbed Condition="'%(Link.ManifestEmbed)' == '' and '$(LegacyManifestEmbedding)' != 'true'">$(EmbedManifest)</ManifestEmbed>
+        <ManifestInput Condition="'$(LegacyManifestEmbedding)' != 'true' and '$(EmbedManifest)' == 'true'">@(Link->'%(ManifestInput)');@(Manifest);$(ManifestAdditionalManifestFiles)</ManifestInput>
+        <ManifestFile Condition="'$(LegacyManifestEmbedding)' != 'true'" />
+      </Link>
+
+      <!-- Remove some Winmd switches if generation is false -->
+      <Link>
+        <WindowsMetadataFile            Condition="'%(Link.GenerateWindowsMetadata)' == ''" />
+        <WindowsMetadataLinkKeyFile     Condition="'%(Link.GenerateWindowsMetadata)' == ''" />
+        <WindowsMetadataKeyContainer    Condition="'%(Link.GenerateWindowsMetadata)' == ''" />
+        <WindowsMetadataLinkDelaySign   Condition="'%(Link.GenerateWindowsMetadata)' == ''" />
+        <WindowsMetadataSignHash        Condition="'%(Link.GenerateWindowsMetadata)' == ''" />
+      </Link>
+
+      <Link>
+        <!-- Generate full PDB. For now call link without /debug:fastlink. Later will'll call a special tool to create merge pdbs  -->
+        <GenerateDebugInformation Condition="'%(Link.GenerateDebugInformation)' == 'DebugFastLink' and '%(Link.FullProgramDatabaseFile)' == 'true'">true</GenerateDebugInformation>
+      </Link>
+    </ItemGroup>
+        
+    <Link
+        BuildingInIDE                  ="$(BuildingInsideVisualStudio)"
+        Sources                        ="@(Link)"
+        CommandLineTemplate ="%(Link.CommandLineTemplate)"
+        StandardOutputImportance ="High"
+        StandardErrorImportance ="High"
+
+        OutputFile                     ="%(Link.OutputFile)"
+
+        ToolExe                        ="$(LinkToolExe)"
+        ToolPath                       ="$(LinkToolPath)"
+
+        DebugInformationFormat ="%(Link.DebugInformationFormat)"
+        AcceptableNonZeroExitCodes     ="%(Link.AcceptableNonZeroExitCodes)"
+        YieldDuringToolExecution       ="$(LinkYieldDuringToolExecution)"
+        BuildOutput ="%(Link.BuildOutput)"
+        SuppressStartupBanner          ="%(Link.SuppressStartupBanner)"
+        
+        TrackerLogDirectory            ="%(Link.TrackerLogDirectory)"
+        MinimalRebuildFromTracking     ="$(Link_MinimalRebuildFromTracking)"
+        TrackFileAccess                ="$(TrackFileAccess)"
+        
+    >
+      <!--
+      <Output TaskParameter="SkippedExecution" PropertyName="LinkSkippedExecution" />
+      -->
+    </Link>
+
+    <!--
+    
+        AdditionalDependencies         ="%(Link.AdditionalDependencies)"
+        AdditionalLibraryDirectories   ="%(Link.AdditionalLibraryDirectories)"
+        AdditionalManifestDependencies ="%(Link.AdditionalManifestDependencies)"
+        AdditionalOptions              ="%(Link.AdditionalOptions)"
+        AddModuleNamesToAssembly       ="%(Link.AddModuleNamesToAssembly)"
+        AllowIsolation                 ="%(Link.AllowIsolation)"
+        AppContainer                   ="%(Link.AppContainer)"
+        AssemblyDebug                  ="%(Link.AssemblyDebug)"
+        AssemblyLinkResource           ="%(Link.AssemblyLinkResource)"
+        BaseAddress                    ="%(Link.BaseAddress)"
+        CLRImageType                   ="%(Link.CLRImageType)"
+        CLRSupportLastError            ="%(Link.CLRSupportLastError)"
+        CLRThreadAttribute             ="%(Link.CLRThreadAttribute)"
+        CLRUnmanagedCodeCheck          ="%(Link.CLRUnmanagedCodeCheck)"
+        CreateHotPatchableImage        ="%(Link.CreateHotPatchableImage)"
+        DataExecutionPrevention        ="%(Link.DataExecutionPrevention)"
+        DelayLoadDLLs                  ="%(Link.DelayLoadDLLs)"
+        Driver                         ="%(Link.Driver)"
+        EmbedManagedResourceFile       ="@(_EmbedManagedResourceFile)"
+        EnableCOMDATFolding            ="%(Link.EnableCOMDATFolding)"
+        EnableUAC                      ="%(Link.EnableUAC)"
+        EntryPointSymbol               ="%(Link.EntryPointSymbol)"
+        LinkErrorReporting             ="%(Link.LinkErrorReporting)"
+        FixedBaseAddress               ="%(Link.FixedBaseAddress)"
+        ForceFileOutput                ="%(Link.ForceFileOutput)"
+        ForceSymbolReferences          ="%(Link.ForceSymbolReferences)"
+        FunctionOrder                  ="%(Link.FunctionOrder)"
+        GenerateManifest               ="$(GenerateManifest)"
+        GenerateMapFile                ="%(Link.GenerateMapFile)"
+        GenerateWindowsMetadata        ="$(_GenerateWindowsMetadata)"
+        WindowsMetadataFile            ="%(Link.WindowsMetadataFile)"
+        HeapCommitSize                 ="%(Link.HeapCommitSize)"
+        HeapReserveSize                ="%(Link.HeapReserveSize)"
+        IgnoreAllDefaultLibraries      ="%(Link.IgnoreAllDefaultLibraries)"
+        IgnoreEmbeddedIDL              ="%(Link.IgnoreEmbeddedIDL)"
+        IgnoreSpecificDefaultLibraries ="%(Link.IgnoreSpecificDefaultLibraries)"
+        ImageHasSafeExceptionHandlers  ="%(Link.ImageHasSafeExceptionHandlers)"
+        ImportLibrary                  ="%(Link.ImportLibrary)"
+        KeyContainer                   ="%(Link.KeyContainer)"
+        LargeAddressAware              ="%(Link.LargeAddressAware)"
+        LinkDLL                        ="%(Link.LinkDLL)"
+        LinkIncremental                ="$(LinkIncremental)"
+        LinkStatus                     ="%(Link.LinkStatus)"
+        LinkTimeCodeGeneration         ="%(Link.LinkTimeCodeGeneration)"
+        ManifestFile                   ="%(Link.ManifestFile)"
+        ManifestEmbed                  ="%(Link.ManifestEmbed)"
+        ManifestInput                  ="%(Link.ManifestInput)"
+        MapExports                     ="%(Link.MapExports)"
+        MapFileName                    ="%(Link.MapFileName)"
+        MergedIDLBaseFileName          ="%(Link.MergedIDLBaseFileName)"
+        MergeSections                  ="%(Link.MergeSections)"
+        MidlCommandFile                ="%(Link.MidlCommandFile)"
+        MinimumRequiredVersion         ="%(Link.MinimumRequiredVersion)"
+        ModuleDefinitionFile           ="%(Link.ModuleDefinitionFile)"
+        MSDOSStubFileName              ="%(Link.MSDOSStubFileName)"
+        Natvis                         ="@(Natvis)"
+        OptimizeReferences             ="%(Link.OptimizeReferences)"
+        
+        PreventDllBinding              ="%(Link.PreventDllBinding)"
+        Profile                        ="%(Link.Profile)"
+        ProfileGuidedDatabase          ="%(Link.ProfileGuidedDatabase)"
+        ProgramDatabaseFile            ="%(Link.ProgramDatabaseFile)"
+        RandomizedBaseAddress          ="%(Link.RandomizedBaseAddress)"
+        NoEntryPoint                   ="%(Link.NoEntryPoint)"
+        SectionAlignment               ="%(Link.SectionAlignment)"
+        SetChecksum                    ="%(Link.SetChecksum)"
+        ShowProgress                   ="%(Link.ShowProgress)"
+        SignHash                       ="%(Link.SignHash)"
+        SpecifySectionAttributes       ="%(Link.SpecifySectionAttributes)"
+        StackCommitSize                ="%(Link.StackCommitSize)"
+        StackReserveSize               ="%(Link.StackReserveSize)"
+        StripPrivateSymbols            ="%(Link.StripPrivateSymbols)"
+        SubSystem                      ="%(Link.SubSystem)"
+        SupportUnloadOfDelayLoadedDLL  ="%(Link.SupportUnloadOfDelayLoadedDLL)"
+        SupportNobindOfDelayLoadedDLL  ="%(Link.SupportNobindOfDelayLoadedDLL)"
+        SwapRunFromCD                  ="%(Link.SwapRunFromCD)"
+        SwapRunFromNET                 ="%(Link.SwapRunFromNET)"
+        TargetMachine                  ="%(Link.TargetMachine)"
+        TerminalServerAware            ="%(Link.TerminalServerAware)"
+        TreatLinkerWarningAsErrors     ="%(Link.TreatLinkerWarningAsErrors)"
+        TurnOffAssemblyGeneration      ="%(Link.TurnOffAssemblyGeneration)"
+        TypeLibraryFile                ="%(Link.TypeLibraryFile)"
+        TypeLibraryResourceID          ="%(Link.TypeLibraryResourceID)"
+        UACExecutionLevel              ="%(Link.UACExecutionLevel)"
+        UACUIAccess                    ="%(Link.UACUIAccess)"
+        Version                        ="%(Link.Version)"
+        WindowsMetadataLinkKeyFile     ="%(Link.WindowsMetadataLinkKeyFile)"
+        WindowsMetadataKeyContainer    ="%(Link.WindowsMetadataKeyContainer)"
+        WindowsMetadataLinkDelaySign   ="%(Link.WindowsMetadataLinkDelaySign)"
+        WindowsMetadataSignHash        ="%(Link.WindowsMetadataSignHash)"
+
+        TLogReadFiles                  ="@(LinkTLogReadFiles)"
+        TLogWriteFiles                 ="@(LinkTLogWriteFiles)"
+        
+        ControlFlowGuard               ="$(LinkControlFlowGuard)"
+        DelaySign                      ="$(LinkDelaySign)"
+        GenerateDebugInformation       ="%(Link.GenerateDebugInformation)"
+        KeyFile                        ="$(LinkKeyFile)"
+        ToolArchitecture               ="$(LinkToolArchitecture)"
+        TrackerFrameworkPath           ="$(LinkTrackerFrameworkPath)"
+        TrackerSdkPath                 ="$(LinkTrackerSdkPath)"
+        TrackedInputFilesToIgnore      ="@(LinkNoDependencies)"
+    -->
+    
+    <Message Text="$(MSBuildProjectFile) -&gt; $(TargetPath)" Importance="High" Condition="'$(EmbedManifestBy)' != 'LINK' or '$(LegacyManifestEmbedding)' != 'true' or '$(LinkSkippedExecution)' == 'true'"/>
+    <Message Text="$(MSBuildProjectFile) -&gt; %(Link.ProgramDatabaseFile) (Partial PDB)" Importance="High"
+             Condition="('$(EmbedManifestBy)' != 'LINK' or '$(LegacyManifestEmbedding)' != 'true' or '$(LinkSkippedExecution)' == 'true') and
+             %(Link.GenerateDebugInformation) == 'DebugFastLink'"/>
+    <Message Text="$(MSBuildProjectFile) -&gt; %(Link.ProgramDatabaseFile) (Full PDB)" Importance="High"
+             Condition="('$(EmbedManifestBy)' != 'LINK' or '$(LegacyManifestEmbedding)' != 'true' or '$(LinkSkippedExecution)' == 'true') and
+             %(Link.GenerateDebugInformation) == 'true'"/>
+  </Target>
+
+  <!-- *******************************************************************************************
+        Lib
+       ******************************************************************************************* -->
+
+  <Target Name="Lib"
+          Condition="'@(Lib)' != ''">
+    <ItemGroup>
+      <Lib>
+        <MinimalRebuildFromTracking Condition="'$(_BuildActionType)' != 'Build' or '$(ForceRebuild)' == 'true'">false</MinimalRebuildFromTracking>
+      </Lib>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <LibToolArchitecture Condition="'$(LibToolArchitecture)' == ''">$(VCToolArchitecture)</LibToolArchitecture>
+    </PropertyGroup>
+
+    <LIB
+      Sources                         ="@(Lib)"
+      CommandLineTemplate ="%(Lib.CommandLineTemplate)"
+        StandardOutputImportance ="High"
+        StandardErrorImportance ="High"
+
+      AdditionalDependencies          ="%(Lib.AdditionalDependencies)"
+      AdditionalLibraryDirectories    ="%(Lib.AdditionalLibraryDirectories)"
+      AdditionalOptions               ="$(LibAdditionalOptions)"
+      
+      OutputFile                      ="%(Lib.OutputFile)"
+    SuppressStartupBanner           ="%(Lib.SuppressStartupBanner)"
+
+    ToolExe                         ="$(LIBToolExe)"
+    ToolPath                        ="$(LIBToolPath)"
+        BuildOutput ="%(Lib.BuildOutput)"
+
+    TrackerLogDirectory             ="%(Lib.TrackerLogDirectory)"
+    MinimalRebuildFromTracking      ="%(Lib.MinimalRebuildFromTracking)"
+    TrackFileAccess                 ="$(TrackFileAccess)"
+      
+    AcceptableNonZeroExitCodes      ="%(Lib.AcceptableNonZeroExitCodes)"
+      >
+    </LIB>
+
+    <!--
+      DisplayLibrary                  ="%(Lib.DisplayLibrary)"
+      ErrorReporting                  ="%(Lib.LinkErrorReporting)"
+      ExportNamedFunctions            ="%(Lib.ExportNamedFunctions)"
+      ForceSymbolReferences           ="%(Lib.ForceSymbolReferences)"
+      IgnoreAllDefaultLibraries       ="%(Lib.IgnoreAllDefaultLibraries)"
+      IgnoreSpecificDefaultLibraries  ="%(Lib.IgnoreSpecificDefaultLibraries)"
+      LinkTimeCodeGeneration          ="%(Lib.LinkTimeCodeGeneration)"
+      ModuleDefinitionFile            ="%(Lib.ModuleDefinitionFile)"
+      Name                            ="%(Lib.Name)"
+    RemoveObjects                   ="%(Lib.RemoveObjects)"
+    SubSystem                       ="%(Lib.SubSystem)"
+    TargetMachine                   ="%(Lib.TargetMachine)"
+    TreatLibWarningAsErrors         ="%(Lib.TreatLibWarningAsErrors)"
+    Verbose                         ="%(Lib.Verbose)"
+    
+    TLogReadFiles                   ="@(LIBTLogReadFiles)"
+    TLogWriteFiles                  ="@(LIBTLogWriteFiles)"
+
+    ToolArchitecture                ="$(LibToolArchitecture)"
+    TrackerFrameworkPath            ="$(LibTrackerFrameworkPath)"
+    TrackerSdkPath                  ="$(LibTrackerSdkPath)"
+    TrackedInputFilesToIgnore       ="@(LibNoDependencies)"
+      -->
+
+    <Message Text="$(MSBuildProjectFile) -&gt; $(TargetPath)" Importance="High" />
+  </Target>
+
+  <!-- *******************************************************************************************
+        Managed Resource Compile
+       ******************************************************************************************* -->
+  <Target Name="CreateManifestResourceNames"></Target>
+
+  <Import Condition="'$(_CppCommonExtensionTargets)' != ''" Project="$(_CppCommonExtensionTargets)" />
+</Project>

@@ -44,5 +44,6 @@
     <None Include="installer\install.bat">
       <Filter>소스 파일</Filter>
     </None>
+    <None Include="package.json" />
   </ItemGroup>
 </Project>

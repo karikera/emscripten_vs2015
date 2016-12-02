@@ -7,6 +7,6 @@
 @cd /d %~dp0
 @if defined ProgramFiles(x86^) (set "Dest=%ProgramFiles(x86)%"
 )else set "Dest=%ProgramFiles%"
-@xcopy /SCIY "emscripten" "%Dest%\MSBuild\Microsoft.Cpp\v4.0\V140\Platforms\emscripten"
+@xcopy /ECIY "emscripten" "%Dest%\MSBuild\Microsoft.Cpp\v4.0\V140\Platforms\emscripten"
 @echo Install complete
 @pause

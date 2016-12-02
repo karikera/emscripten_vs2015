@@ -643,23 +643,37 @@ dword link(ATextW &output, WRefArray<ATextW> inputs) noexcept
 	int exitCode = process.getExitCode();
 	if (exitCode == 0)
 	{
-		io::FOStream<char> fos = File::create(output.c_str());
-		TemplateWriter<io::FOStream<char>> writer(&fos, "{{", "}}");
-
-		TextW dir;
+		TextW compilerdir, outdir;
 		ModuleName<wchar> exepath;
 		exepath.change(L'\\', L'/');
-		splitFileName(exepath, &dir, nullptr);
+		splitFileName(exepath, &compilerdir, nullptr);
+		splitFileName(output, &outdir, nullptr);
 
 		try
 		{
-			MappedFile file(TSZW() << dir << L"/template.html");
+			io::FOStream<char> fos = File::create(output.c_str());
+			TemplateWriter<io::FOStream<char>> writer(&fos, "{{", "}}");
 			writer.put("script", TSZ() << (WideToUtf8)outputjs.subarr(outputjs.pos_r(L'/') + 1));
-			writer.write(file.cast<char>());
+
+			MappedFile srcfile(TSZW() << compilerdir << L"/template.html");
+			writer.write(srcfile.cast<char>());
 		}
 		catch (FileException&)
 		{
-			cerr << "Cannot open template.html" << endl;
+			cerr << "Cannot generate html" << endl;
+		}
+		try
+		{
+			io::FOStream<char> fos = File::create(TSZW() << outdir << L"/package.json");
+			TemplateWriter<io::FOStream<char>> writer(&fos, "{{", "}}");
+			writer.put("entry", TSZ() << (WideToUtf8)output.subarr(output.pos_r(L'/') + 1));
+
+			MappedFile srcfile(TSZW() << compilerdir << L"/package.json");
+			writer.write(srcfile.cast<char>());
+		}
+		catch (FileException&)
+		{
+			cerr << "Cannot generate package.json" << endl;
 		}
 	}
 

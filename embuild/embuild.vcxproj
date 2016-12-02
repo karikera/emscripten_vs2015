@@ -67,44 +67,12 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+      <Command>set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
 mkdir %InstallerDir% 2&gt;NUL
-xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
-xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
-mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
+xcopy /ECIY "$(ProjectDir)installer" "%InstallerDir%"
 copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
 copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
-</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
-mkdir %InstallerDir% 2&gt;NUL
-xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
-xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
-mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
-copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
-copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
-</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
-mkdir %InstallerDir% 2&gt;NUL
-xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
-xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
-mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
-copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
-copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
-</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
-mkdir %InstallerDir% 2&gt;NUL
-xcopy /SCIY "$(ProjectDir)installer" "%InstallerDir%"
-xcopy /SCIY "$(ProjectDir)emscripten" "%InstallerDir%\emscripten"
-mkdir %InstallerDir%\emscripten\PlatformToolsets\v140\bin 2&gt;NUL
-copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
-copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
-</Command>
+copy "$(ProjectDir)package.json" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\package.json"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -122,6 +90,7 @@ copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v1
   </ItemGroup>
   <ItemGroup>
     <None Include="installer\install.bat" />
+    <None Include="package.json" />
     <None Include="template.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
