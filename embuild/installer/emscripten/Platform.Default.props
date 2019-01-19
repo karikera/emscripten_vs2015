@@ -19,10 +19,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <PlatformShortName>js</PlatformShortName>
     <PlatformArchitecture>32</PlatformArchitecture>
     <PlatformTarget>js</PlatformTarget>
-    <DefaultPlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">emscripten</DefaultPlatformToolset>
+    <DefaultPlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">v140</DefaultPlatformToolset>
 
     <!-- Have to maintain compatibility with VS2010 projects, which might not have toolset defined in the project-->
-    <PlatformToolset Condition="'$(PlatformToolset)' == ''">emscripten</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v140</PlatformToolset>
   </PropertyGroup>
   
   <!-- Import After -->

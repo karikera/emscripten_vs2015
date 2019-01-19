@@ -810,8 +810,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
    <PropertyGroup>
     <ComputeLinkInputsTargets>
-      $(ComputeLinkInputsTargets);
       ComputeReferenceLinkInputs;
+      $(ComputeLinkInputsTargets);
     </ComputeLinkInputsTargets>
    </PropertyGroup>
 
@@ -843,8 +843,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
    <PropertyGroup>
     <ComputeLibInputsTargets>
-      $(ComputeLibInputsTargets);
       ComputeReferenceLibInputs;
+      $(ComputeLibInputsTargets);
     </ComputeLibInputsTargets>
    </PropertyGroup>
 
@@ -1511,8 +1511,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </PropertyPageSchema>
     
     <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(MSBuildThisFileDirectory)cl.xml"/>
-    <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(VCTargetsPath)$(LangID)\link.xml"/>
-    <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(VCTargetsPath)$(LangID)\lib.xml"/>
+    <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(MSBuildThisFileDirectory)link.xml"/>
+    <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(MSBuildThisFileDirectory)lib.xml"/>
+    <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="$(MSBuildThisFileDirectory)js.xml"/>
 
     <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="
         $(VCTargetsPath)$(LangID)\alink.xml;

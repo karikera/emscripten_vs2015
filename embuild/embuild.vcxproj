@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -67,12 +67,14 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>set InstallerDir=$(SolutionDir)installer\$(PlatformShortName)\$(Configuration)
+      <Command>set InstallerDir=$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)
 mkdir %InstallerDir% 2&gt;NUL
-xcopy /ECIY "$(ProjectDir)installer" "%InstallerDir%"
-copy "$(TargetPath)" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\$(TargetFileName)"
-copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\template.html"
-copy "$(ProjectDir)package.json" "%InstallerDir%\emscripten\PlatformToolsets\v140\bin\package.json"</Command>
+kcopy "$(ProjectDir)installer" "%InstallerDir%"
+kcopy "%InstallerDir%\Emscripten\PlatformToolsets\v140" "%InstallerDir%\Emscripten\PlatformToolsets\v141"
+copy "$(TargetPath)" "%InstallerDir%\emscripten\bin\$(TargetFileName)"
+copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\bin\template.html"
+Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer.exe"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -89,11 +91,57 @@ copy "$(ProjectDir)package.json" "%InstallerDir%\emscripten\PlatformToolsets\v14
     <ClInclude Include="tlog.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="installer\install.bat" />
-    <None Include="package.json" />
+    <None Include="installer\Emscripten\emscripten.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\Platform.Common.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\Platform.Default.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\Platform.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\Platform.targets">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppBuild.targets" />
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppCommon.targets">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.props">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.targets" />
     <None Include="template.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\installer\installer.vcxproj">
+      <Project>{c6930e55-626d-41a0-9aa2-ae0936250939}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\ken-bin\kr3.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\cl.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\js.xml" />
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\lib.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\link.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties package_1json__JSONSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

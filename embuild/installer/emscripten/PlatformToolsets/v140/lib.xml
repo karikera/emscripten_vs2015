@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Copyright, Microsoft Corporation, All rights reserved.-->
 <ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
-  <Rule Name="LIB" PageTemplate="tool" DisplayName="라이브러리 관리자" SwitchPrefix="/" Order="40">
+  <Rule Name="LIB" PageTemplate="tool" DisplayName="Librarian" SwitchPrefix="/" Order="40">
     
     <Rule.Categories>
       <Category Name="General" DisplayName="General"/>
+      <Category Name="Emscripten" DisplayName="Emscripten" />
       <Category Name="Advanced" DisplayName="Advanced"/>
       <Category Name="All Options" DisplayName="All Options" Subtype="Search"/>
       <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine"/>
@@ -34,9 +35,24 @@
     <EnumProperty Name="BuildOutput" DisplayName="Build Output" Description="Build Output" Category="Advanced">
       <EnumValue Name="FileName" Switch="log:filename" DisplayName="File name only" Description="Show just file name.">
       </EnumValue>
-      <EnumValue Name="Detail" Switch="log:cmdline" DisplayName="Command line" Description="Show executing command line.">
+      <EnumValue Name="CommandLineEMCC" Switch="log:emcc" DisplayName="Command line(emcc)" Description="Show executing emcc command line.">
+      </EnumValue>
+      <EnumValue Name="CommandLineEMBuild" Switch="log:embuild" DisplayName="Command line(embuild)" Description="Show executing embuild command line.">
       </EnumValue>
     </EnumProperty>
+
+    <BoolProperty Name="LegacyGlEmulation" Switch="legacy_gl_emulation" DisplayName="Legacy GL Emulation" Category="Emscripten" />
+    <BoolProperty Name="GlUnsafeOpts" Switch="gl_unsafe_opts" DisplayName="GL Unsafe Optimize" Category="Emscripten" />
+    <BoolProperty Name="GlFfpOnly" Switch="gl_ffp_only" DisplayName="GL FFP Only" Category="Emscripten" />
+    <EnumProperty Name="DisableExceptionCatching" DisplayName="Disable Exception Catching" Category="Emscripten">
+      <EnumValue Name="Yes" Switch="" DisplayName="Yes" />
+      <EnumValue Name="No" Switch="enable_exception_catching" DisplayName="No" />
+    </EnumProperty>
+    <BoolProperty Name="SafeHeap" Switch="safe_heap" DisplayName="Safe Heap" Category="Emscripten" />
+    <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
+    <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
+    <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
+    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
 
     <!--
     <StringProperty Subtype="file" Name="ModuleDefinitionFile" DisplayName="모듈 정의 파일 이름" Description="/DEF 옵션으로 모듈 정의 파일(.def)을 LIB에 전달할 수 있습니다. LIB에 대해 .def 파일 하나만 지정할 수 있습니다." Category="General" Switch="DEF" Separator=":" F1Keyword="VC.Project.VCLibrarianTool.ModuleDefinitionFile">

@@ -9,10 +9,15 @@
       <Category Name="Input" DisplayName="입력"/>
       <Category Name="Manifest File" DisplayName="매니페스트 파일"/>
       -->
+      <Category Name="Emscripten" DisplayName="Emscripten" />
+      <Category Name="NWJS" DisplayName="NW.js"/>
+      <Category Name="NWJSWindow" DisplayName="NW.js Window"/>
       <Category Name="Debugging" DisplayName="Debugging"/>
       <!--
       <Category Name="System" DisplayName="시스템"/>
-      <Category Name="Optimization" DisplayName="최적화"/>
+      -->
+      <Category Name="Optimization" DisplayName="Optimization"/>
+      <!--
       <Category Name="Embedded IDL" DisplayName="포함 IDL"/>
       <Category Name="Windows Metadata" DisplayName="Windows 메타데이터"/>
       -->
@@ -32,15 +37,48 @@
     <StringListProperty Name="Sources" IsRequired="true">
     </StringListProperty>
 
-    <StringProperty Subtype="file" Name="OutputFile" DisplayName="출력 파일" Description="/OUT 옵션을 사용하면 링커에서 만드는 프로그램의 기본 이름과 위치는 무시됩니다." Category="General" Switch="Xo" Separator=":" F1Keyword="VC.Project.VCLinkerTool.OutputFile">
-    </StringProperty>
-    <BoolProperty Name="SuppressStartupBanner" DisplayName="시작 배너 표시 안 함" Description="/NOLOGO 옵션을 사용하면 저작권 메시지와 버전 번호가 표시되지 않습니다. " Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCLinkerTool.SuppressStartupBanner">
-    </BoolProperty>
+    <StringProperty Subtype="file" Name="OutputFile" DisplayName="출력 파일" Description="/OUT 옵션을 사용하면 링커에서 만드는 프로그램의 기본 이름과 위치는 무시됩니다." Category="General" Switch="Xo" Separator=":" F1Keyword="VC.Project.VCLinkerTool.OutputFile" />
+    <BoolProperty Name="SuppressStartupBanner" DisplayName="시작 배너 표시 안 함" Description="/NOLOGO 옵션을 사용하면 저작권 메시지와 버전 번호가 표시되지 않습니다. " Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCLinkerTool.SuppressStartupBanner" />
+
+    <BoolProperty Name="LegacyGlEmulation" Switch="legacy_gl_emulation" DisplayName="Legacy GL Emulation" Category="Emscripten" />
+    <BoolProperty Name="GlUnsafeOpts" Switch="gl_unsafe_opts" DisplayName="GL Unsafe Optimize" Category="Emscripten" />
+    <BoolProperty Name="GlFfpOnly" Switch="gl_ffp_only" DisplayName="GL FFP Only" Category="Emscripten" />
+    <EnumProperty Name="DisableExceptionCatching" DisplayName="Disable Exception Catching" Category="Emscripten">
+      <EnumValue Name="Yes" Switch="" DisplayName="Yes" />
+      <EnumValue Name="No" Switch="enable_exception_catching" DisplayName="No" />
+    </EnumProperty>
+    <BoolProperty Name="DemangleSupport" Switch="demangle_support" DisplayName="Demangle Support" Category="Emscripten" />
+    <BoolProperty Name="FullEs2" Switch="full_es2" DisplayName="Full ES2" Category="Emscripten" />
+    <EnumProperty Name="UseSDL" DisplayName="UseSDL" Category="Emscripten">
+      <EnumValue Name="None" Switch="" DisplayName="None">
+      </EnumValue>
+      <EnumValue Name="SDL1" Switch="use_sdl:1">
+      </EnumValue>
+      <EnumValue Name="SDL2" Switch="use_sdl:2">
+      </EnumValue>
+    </EnumProperty>
+    <BoolProperty Name="Fetch" Switch="fetch" DisplayName="Fetch" Category="Emscripten" />
+    <BoolProperty Name="SafeHeap" Switch="safe_heap" DisplayName="Safe Heap" Category="Emscripten" />
+    <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
+    <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
+    <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
+    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
+    <BoolProperty Name="Bind" Switch="bind" Description="Bind" Category="Emscripten" />
+    <EnumProperty Name="WASM" Description="WASM" Category="Emscripten">
+      <EnumValue Name="NativeWASM" Switch="wasm:native-wasm" DisplayName="Native WASM" Description="Use native binary wasm support in the browser." />
+      <EnumValue Name="InterpretSExpr" Switch="wasm:interpret-s-expr" DisplayName="Interpret WAST" Description="Load a .wast, which contains wasm in s-expression format, and interpret it." />
+      <EnumValue Name="InterpretBinary" Switch="wasm:interpret-binary" DisplayName="Interpret Binary" Description="Load a .wasm, which contains wasm in binary format, and interpret it." />
+      <EnumValue Name="InterpretAsm2Wasm" Switch="wasm:interpret-asm2wasm" DisplayName="Interpret ASM to WASM" Description="Load .asm.js, compile to wasm on the fly, and interpret that." />
+      <EnumValue Name="AsmJS" Switch="wasm:asmjs" DisplayName="asm.js" Description="Load .asm.js and just run it, no wasm. Useful for comparisons, or as a fallback for browsers without WebAssembly support." />
+      <EnumValue Name="No" Switch="" DisplayName="No" />
+    </EnumProperty>
 
     <EnumProperty Name="BuildOutput" DisplayName="Build Output" Description="Build Output" Category="Advanced">
       <EnumValue Name="FileName" Switch="log:filename" DisplayName="File name only" Description="Show just file name.">
       </EnumValue>
-      <EnumValue Name="Detail" Switch="log:cmdline" DisplayName="Command line" Description="Show executing command line.">
+      <EnumValue Name="CommandLineEMCC" Switch="log:emcc" DisplayName="Command line(emcc)" Description="Show executing emcc command line.">
+      </EnumValue>
+      <EnumValue Name="CommandLineEMBuild" Switch="log:embuild" DisplayName="Command line(embuild)" Description="Show executing embuild command line.">
       </EnumValue>
     </EnumProperty>
     
@@ -169,7 +207,46 @@
     <StringListProperty Subtype="folder" Name="ManifestInput" DisplayName="매니페스트 입력" Description="통합해야 하는 매니페스트를 지정하는 데 사용됩니다." Category="Manifest File" Switch="manifestinput:" Visible="false" F1Keyword="VC.Project.VCLinkerTool.ManifestInput">
     </StringListProperty>
     -->
-    <EnumProperty Name="DebugInformationFormat" DisplayName="디버그 정보 형식" Description="컴파일러에서 생성되는 디버깅 정보 형식을 지정합니다. (/g0, /g1, /g2, /g3, /g4)" Category="Debugging" F1Keyword="VC.Project.VCLinkerTool.GenerateDebugInformation">
+
+    <StringProperty Name="NWJS_Name" DisplayName="Name" Description="the name of the package. This must be a unique, lowercase alpha-numeric name without spaces. It may include &quot;.&quot; or &quot;_&quot; or &quot;-&quot; characters. It is otherwise opaque." Category="NWJS" Switch="nwjs_name:" />
+    <StringProperty Name="NWJS_Description" DisplayName="Description" Description="a brief description of the package. By convention, the first sentence (up to the first &quot;. &quot;) should be usable as a package title in listings." Category="NWJS" Switch="nwjs_desc:" />
+    <StringProperty Name="NWJS_Version" DisplayName="Version" Description="a version string conforming to the Semantic Versioning requirements." Category="NWJS" Switch="nwjs_version:" />
+    <StringListProperty Name="NWJS_Keywords" DisplayName="Keywords" Description="an Array of string keywords to assist users searching for the package in catalogs." Category="NWJS" Switch="nwjs_keyword:" />
+    <StringProperty Name="NWJS_Bugs" DisplayName="Bugs" Description="URL for submitting bugs. Can be mailto or http." Category="NWJS" Switch="nwjs_bugs:" />
+    <StringProperty Name="NWJS_ChromiumArgs" DisplayName="ChromiumArgs" Description="Specify chromium (content shell) command line arguments. It will be useful if you want to distribute the app with some custom chromium args." Category="NWJS" Switch="nwjs_chromium_args:" />
+
+    <StringProperty Name="NWJS_Title" DisplayName="Title" Description="the default title of window created by node-webkit, it's very useful if you want to show your own title when the app is starting." Category="NWJSWindow" Switch="nwjs_title:" />
+    <StringProperty Name="NWJS_Width" DisplayName="Width" Description="the initial width of the main window." Category="NWJSWindow" Switch="nwjs_width:" />
+    <StringProperty Name="NWJS_Height" DisplayName="Height" Description="the initial height of the main window." Category="NWJSWindow" Switch="nwjs_height:" />
+    <BoolProperty Name="NWJS_Toolbar" DisplayName="Toolbar" Description="should the navigation toolbar be showed." Category="NWJSWindow" Switch="nwjs_toolbar" />
+    <StringProperty Name="NWJS_Icon" DisplayName="Icon" Description="path to window's icon" Category="NWJSWindow" Switch="nwjs_icon:" />
+    <EnumProperty Name="NWJS_Position" DisplayName="Position" Description="be null or center or mouse, controls where window will be put" Category="NWJSWindow">
+      <EnumValue Name="NULL" Switch="nwjs_position:null" DisplayName="NULL" />
+      <EnumValue Name="Center" Switch="nwjs_position:center" DisplayName="Center" />
+      <EnumValue Name="Mouse" Switch="nwjs_position:mouse" DisplayName="Mouse" />
+    </EnumProperty>
+    <EnumProperty Name="NWJS_Resizable" DisplayName="Resizable" Description="whether window is resizable" Category="NWJSWindow">
+      <EnumValue Name="Resizable" Switch="" DisplayName="Resizable" />
+      <EnumValue Name="NoResizable" Switch="nwjs_noresizable" DisplayName="No Resizable" />
+    </EnumProperty>
+    <BoolProperty Name="NWJS_AlwaysOnTop" DisplayName="AlwaysOnTiop" Description="whether window is resizable" Category="NWJSWindow" Switch="nwjs_always_on_top" />
+    <BoolProperty Name="NWJS_Fullscreen" DisplayName="Fullscreen" Description="whether window is fullscreen" Category="NWJSWindow" Switch="nwjs_fullscreen" />
+    <EnumProperty Name="NWJS_ShowInTaskbar" DisplayName="Show in taskbar" Description="whether the window is shown in taskbar or dock." Category="NWJSWindow">
+      <EnumValue Name="ShowInTaskbar" Switch="" DisplayName="Show in taskbar" />
+      <EnumValue Name="HideInTaskbar" Switch="nwjs_hide_in_taskbar" DisplayName="Hide in taskbar" />
+    </EnumProperty>
+    <EnumProperty Name="NWJS_Frame" DisplayName="Frame" Description="specify it to false to make the window frameless" Category="NWJSWindow">
+      <EnumValue Name="Frame" Switch="" DisplayName="Frame" />
+      <EnumValue Name="NoFrame" Switch="nwjs_noframe" DisplayName="No Frame" />
+    </EnumProperty>
+    <EnumProperty Name="NWJS_Show" DisplayName="Show" Description="specify it to false if you want your app to be hidden on startup" Category="NWJSWindow" Switch="nwjs_show">
+      <EnumValue Name="Show" Switch="" DisplayName="Show" />
+      <EnumValue Name="Hide" Switch="nwjs_hide" DisplayName="Hide" />
+    </EnumProperty>
+    <BoolProperty Name="NWJS_Kiosk" DisplayName="Kiosk" Description="whether to use Kiosk mode. In Kiosk mode, the app will be fullscreen and try to prevent users from leaving the app, so you should remember to provide a way in app to leave Kiosk mode. This mode is mainly used for presentation on public displays" Category="NWJSWindow" Switch="nwjs_kiosk" />
+    <BoolProperty Name="NWJS_Transparent" DisplayName="Transparent" Description="whether to turn on transparent window mode." Category="NWJSWindow" Switch="nwjs_transparent" />
+
+    <EnumProperty Name="DebugInformationFormat" DisplayName="Debug Information Format" Description="컴파일러에서 생성되는 디버깅 정보 형식을 지정합니다. (/g0, /g1, /g2, /g3, /g4)" Category="Debugging" F1Keyword="VC.Project.VCLinkerTool.GenerateDebugInformation">
       <EnumValue Name="" Switch="" DisplayName="" Description="">
       </EnumValue>
       <EnumValue Name="None" Switch="g0" DisplayName="None" Description="Make no effort to keep code debuggable. Will discard LLVM debug information (this is done by default in -01 and higher).">
@@ -183,6 +260,24 @@
       <EnumValue Name="Max" Switch="g4" DisplayName="Max" Description="Preserve LLVM debug information. This is the highest level of debuggability. If -g was used when compiling the C/C++ sources, this shows line number debug comments, and generates source maps.">
       </EnumValue>
     </EnumProperty>
+    
+    <EnumProperty Name="Optimization" DisplayName="Optimization" Description="코드 최적화를 위한 옵션을 선택합니다. 특정 최적화 옵션을 사용하려면 [사용자 지정]을 선택합니다.     (-O0, -O1, -O2, -O3, -Os, -Oz)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.Optimization">
+      <EnumValue Name="Custom" Switch="" DisplayName="Custom" Description="Custom Optimization">
+      </EnumValue>
+      <EnumValue Name="Disabled" Switch="O0" DisplayName="Disabled" Description="No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.">
+      </EnumValue>
+      <EnumValue Name="Simple" Switch="O1" DisplayName="Simple" Description="Simple optimizations. These include using asm.js, LLVM -O1 optimizations, relooping, removing runtime assertions and C++ exception catching, and enabling -s ALIASING_FUNCTION_POINTERS=1. This is the recommended setting when you want a reasonably optimized build that is generated as quickly as possible (it builds much faster than -O2).">
+      </EnumValue>
+      <EnumValue Name="JS2" Switch="O2" DisplayName="JS-level" Description="Like -O1, but with various JavaScript-level optimizations and LLVM -O3 optimizations.">
+      </EnumValue>
+      <EnumValue Name="JS3" Switch="O3" DisplayName="Additional JS-level" Description="Like -O2, but with additional JavaScript optimizations that can take a significant amount of compilation time.">
+      </EnumValue>
+      <EnumValue Name="MinSpace" Switch="Os" DisplayName="Reduce code size" Description="Like -O3, but with extra optimizations that reduce code size at the expense of performance. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+      <EnumValue Name="MaxSpeed" Switch="Oz" DisplayName="Reduce code size further" Description="Like -Os, but reduces code size even further. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+    </EnumProperty>
+
     <!--
     <StringProperty Subtype="file" Name="ProgramDatabaseFile" DisplayName="프로그램 데이터베이스 파일 생성" Description="기본적으로 /DEBUG를 지정하면 링커가 디버깅 정보를 포함하는 PDB(프로그램 데이터베이스)를 만듭니다. PDB의 기본 파일 이름은 프로그램의 기본 이름에 확장명 .pdb가 추가된 형태입니다." Category="Debugging" Switch="PDB" Separator=":" F1Keyword="VC.Project.VCLinkerTool.ProgramDatabaseFile">
     </StringProperty>

@@ -1,41 +1,43 @@
 #pragma once
 
+#include <KR3/data/set.h>
+
 class TLog;
 
 class TLogGroup
 {
 public:
-	TLogGroup(Map<TextW, Empty> * group) noexcept;
-	void put(TextW value) noexcept;
-	void putPath(TextW value) noexcept;
-	void putPath(RefArray<ATextW> inputs) noexcept;
+	TLogGroup(Set<Text16> * group) noexcept;
+	void put(Text16 value) noexcept;
+	void putPath(Text16 value) noexcept;
+	void putPath(View<AText16> inputs) noexcept;
 
 private:
-	Map<TextW, Empty> * m_group;
+	Set<Text16> * m_group;
 };
 
 class TLogInputs
 {
 	friend TLog;
 public:
-	void put(TextW value) noexcept;
+	void put(Text16 value) noexcept;
 
 private:
-	ATextW m_inputs;
+	AText16 m_inputs;
 };
 
 class TLog
 {
 public:
 	TLog() noexcept;
-	void load(pcwstr path) noexcept;
+	void load(pcstr16 path) noexcept;
 	void save() noexcept;
-	TLogGroup reset(TextW input) noexcept;
-	TLogGroup reset(RefArray<ATextW> inputs) noexcept;
+	TLogGroup reset(Text16 input) noexcept;
+	TLogGroup reset(View<AText16> inputs) noexcept;
 	TLogGroup reset(const TLogInputs& inputs) noexcept;
-	void put(TextW input, TextW value) noexcept;
+	void put(Text16 input, Text16 value) noexcept;
 
 private:
-	ATextW m_filepath;
-	Map<TextW, Map<TextW, Empty>> m_map;
+	AText16 m_filepath;
+	Map<Text16, Set<Text16>> m_map;
 };

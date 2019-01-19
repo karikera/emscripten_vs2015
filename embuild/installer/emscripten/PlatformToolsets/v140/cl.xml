@@ -2,18 +2,19 @@
 <!--Copyright, Microsoft Corporation, All rights reserved.-->
 <ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
   <Rule Name="CL" PageTemplate="tool" DisplayName="C/C++" SwitchPrefix="/" Order="10">
-    
+
     <Rule.Categories>
       <Category Name="General" DisplayName="General"/>
       <Category Name="Optimization" DisplayName="Optimization"/>
       <Category Name="Language" DisplayName="Language"/>
       <Category Name="Preprocessor" DisplayName="Preprocessor"/>
+      <Category Name="Emscripten" DisplayName="Emscripten" />
       <!--
       <Category Name="Code Generation" DisplayName="코드 생성"/>
       <Category Name="Precompiled Headers" DisplayName="미리 컴파일된 헤더"/>
       <Category Name="Browse Information" DisplayName="찾아보기 정보"/>
       -->
-      <Category Name="Output Files" DisplayName="출력 파일"/>
+      <Category Name="Output Files" DisplayName="Output Files"/>
       <Category Name="Advanced" DisplayName="Advanced"/>
       <Category Name="All Options" DisplayName="All Options" Subtype="Search"/>
       <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine"/>
@@ -30,11 +31,11 @@
 
     <StringListProperty Name="Sources" IsRequired="true" Visible="False">
     </StringListProperty>
-    
-    <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="추가 포함 디렉터리" Description="포함 경로에 추가할 하나 이상의 디렉터리를 지정합니다. 항목이 여러 개일 때는 세미콜론으로 구분합니다.     (/I[path])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
+
+    <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Additional Include Directories" Description="포함 경로에 추가할 하나 이상의 디렉터리를 지정합니다. 항목이 여러 개일 때는 세미콜론으로 구분합니다.     (/I[path])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
     </StringListProperty>
 
-    <EnumProperty Name="DebugInformationFormat" DisplayName="디버그 정보 형식" Description="컴파일러에서 생성되는 디버깅 정보 형식을 지정합니다. (/g0, /g1, /g2, /g3, /g4)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.DebugInformationFormat">
+    <EnumProperty Name="DebugInformationFormat" DisplayName="Debug Information Format" Description="컴파일러에서 생성되는 디버깅 정보 형식을 지정합니다. (/g0, /g1, /g2, /g3, /g4)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.DebugInformationFormat">
       <EnumValue Name="" Switch="" DisplayName="" Description="">
       </EnumValue>
       <EnumValue Name="None" Switch="g0" DisplayName="None" Description="Make no effort to keep code debuggable. Will discard LLVM debug information (this is done by default in -01 and higher).">
@@ -48,10 +49,10 @@
       <EnumValue Name="Max" Switch="g4" DisplayName="Max" Description="Preserve LLVM debug information. This is the highest level of debuggability. If -g was used when compiling the C/C++ sources, this shows line number debug comments, and generates source maps.">
       </EnumValue>
     </EnumProperty>
-    
+
     <BoolProperty Name="SuppressStartupBanner" DisplayName="시작 배너 표시 안 함" Description="컴파일러가 시작될 때 나타나는 시작 배너와 컴파일하는 동안 나타나는 정보 메시지를 표시하지 않습니다." Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCCLCompilerTool.SuppressStartupBanner">
     </BoolProperty>
-    
+
     <StringProperty Name="Encoding" DisplayName="파일 인코딩" Description="입력 파일의 텍스트 인코딩입니다." Category="Advanced" Switch="charset:" />
 
     <StringProperty Name="AdditionalOptions" DisplayName="추가 옵션" Description="추가 옵션입니다." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
@@ -59,33 +60,55 @@
 
     <StringProperty Name="CommandLineTemplate" Visible="False" IncludeInCommandLine="False" />
     <StringProperty Name="BuildingInIDE" Visible="False" IncludeInCommandLine="False" />
-    
+
+  
     <StringProperty Subtype="file" Name="ObjectFileName" DisplayName="개체 파일 이름" Description="기본 개체 파일 이름을 재정의하는 이름을 지정합니다. 파일 또는 디렉터리 이름이 될 수 있습니다.     (/Fo[name])" Category="Output Files" Switch="Fo" F1Keyword="VC.Project.VCCLCompilerTool.ObjectFile">
     </StringProperty>
 
-    <EnumProperty Name="ISOStandard" DisplayName="C++ ISO Standard" Description="C++ 버전 종류를 선택합니다." Category="Language">
-      <EnumValue Name="CPP98" Switch="std=c++98" DisplayName="C++98" Description="C++98입니다.">
+    <EnumProperty Name="ISOStandardCPP" DisplayName="C++ ISO Standard" Description="C++ 버전 종류를 선택합니다." Category="Language">
+      <EnumValue Name="CPP98" Switch="stdcpp:c++98" DisplayName="C++98" Description="C++98입니다.">
       </EnumValue>
-      <EnumValue Name="CPP11" Switch="std=c++11" DisplayName="C++11" Description="C++11입니다.">
+      <EnumValue Name="CPP11" Switch="stdcpp:c++11" DisplayName="C++11" Description="C++11입니다.">
       </EnumValue>
-      <EnumValue Name="CPP14" Switch="std=c++14" DisplayName="C++14" Description="C++14입니다.">
+      <EnumValue Name="CPP14" Switch="stdcpp:c++14" DisplayName="C++14" Description="C++14입니다.">
       </EnumValue>
-      <EnumValue Name="CPP1Z" Switch="std=c++1z" DisplayName="C++1z" Description="C++1z입니다.">
+      <EnumValue Name="CPP17" Switch="stdcpp:c++17" DisplayName="C++17" Description="C++17입니다.">
       </EnumValue>
-      <EnumValue Name="GNU98" Switch="std=gnu++98" DisplayName="GNU++98" Description="그누 확장을 포함하는 C++98입니다.">
+      <EnumValue Name="CPP1Z" Switch="stdcpp:c++1z" DisplayName="C++1z" Description="C++1z입니다.">
       </EnumValue>
-      <EnumValue Name="GNU11" Switch="std=gnu++11" DisplayName="GNU++11" Description="그누 확장을 포함하는 C++11입니다.">
+      <EnumValue Name="CPP2A" Switch="stdcpp:c++2a" DisplayName="C++2a" Description="C++2a입니다.">
       </EnumValue>
-      <EnumValue Name="GNU14" Switch="std=gnu++14" DisplayName="GNU++14" Description="그누 확장을 포함하는 C++14입니다.">
+      <EnumValue Name="GNU98" Switch="stdcpp:gnu++98" DisplayName="GNU++98" Description="그누 확장을 포함하는 C++98입니다.">
       </EnumValue>
-      <EnumValue Name="GNU1Z" Switch="std=gnu++1z" DisplayName="GNU++1z" Description="그누 확장을 포함하는 C++1z입니다.">
+      <EnumValue Name="GNU11" Switch="stdcpp:gnu++11" DisplayName="GNU++11" Description="그누 확장을 포함하는 C++11입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU14" Switch="stdcpp:gnu++14" DisplayName="GNU++14" Description="그누 확장을 포함하는 C++14입니다.">
+      </EnumValue>
+      <EnumValue Name="GNU1Z" Switch="stdcpp:gnu++1z" DisplayName="GNU++1z" Description="그누 확장을 포함하는 C++1z입니다.">
+      </EnumValue>
+    </EnumProperty>
+
+    <EnumProperty Name="ISOStandardC" DisplayName="C ISO Standard" Description="C 버전 종류를 선택합니다." Category="Language">
+      <EnumValue Name="C_1990" Switch="stdc:iso9899:1990" DisplayName="ISO C 1990" Description="ISO C 1990">
+      </EnumValue>
+      <EnumValue Name="C_1990_A1" Switch="stdc:iso9899:199409" DisplayName="ISO C 1990 with amendment 1" Description="ISO C 1990 with amendment 1">
+      </EnumValue>
+      <EnumValue Name="GNU_1990" Switch="stdc:gnu89" DisplayName="ISO C 1990 with GNU extensions" Description="ISO C 1990 with GNU extensions">
+      </EnumValue>
+      <EnumValue Name="C_1999" Switch="stdc:iso9899:1999" DisplayName="ISO C 1999" Description="ISO C 1999">
+      </EnumValue>
+      <EnumValue Name="GNU_1999" Switch="stdc:gnu99" DisplayName="ISO C 1999 with GNU extensions" Description="ISO C 1999 with GNU extensions">
+      </EnumValue>
+      <EnumValue Name="C_2011" Switch="stdc:iso9899:2011" DisplayName="ISO C 2011" Description="ISO C 2011">
+      </EnumValue>
+      <EnumValue Name="GNU_2011" Switch="stdc:gnu11" DisplayName="ISO C 2011 with GNU extensions" Description="ISO C 2011 with GNU extensions">
       </EnumValue>
     </EnumProperty>
     
     <StringListProperty Name="PreprocessorDefinitions" DisplayName="전처리기 정의" Description="소스 파일에 대한 전처리 기호를 정의합니다." Category="Preprocessor" Switch="D " F1Keyword="VC.Project.VCCLCompilerTool.PreprocessorDefinitions">
     </StringListProperty>
 
-    <EnumProperty Name="Optimization" DisplayName="최적화" Description="코드 최적화를 위한 옵션을 선택합니다. 특정 최적화 옵션을 사용하려면 [사용자 지정]을 선택합니다.     (-O0, -O1, -O2, -O3, -Os, -Oz)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.Optimization">
+    <EnumProperty Name="Optimization" DisplayName="Optimization" Description="코드 최적화를 위한 옵션을 선택합니다. 특정 최적화 옵션을 사용하려면 [사용자 지정]을 선택합니다.     (-O0, -O1, -O2, -O3, -Os, -Oz)" Category="Optimization" F1Keyword="VC.Project.VCCLCompilerTool.Optimization">
       <EnumValue Name="Custom" Switch="" DisplayName="Custom" Description="Custom Optimization">
       </EnumValue>
       <EnumValue Name="Disabled" Switch="O0" DisplayName="Disabled" Description="No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.">
@@ -105,7 +128,34 @@
     <EnumProperty Name="BuildOutput" DisplayName="Build Output" Description="Build Output" Category="Advanced">
       <EnumValue Name="FileName" Switch="log:filename" DisplayName="File name only" Description="Show just file name.">
       </EnumValue>
-      <EnumValue Name="Detail" Switch="log:cmdline" DisplayName="Command line" Description="Show executing command line.">
+      <EnumValue Name="CommandLineEMCC" Switch="log:emcc" DisplayName="Command line(emcc)" Description="Show executing emcc command line.">
+      </EnumValue>
+      <EnumValue Name="CommandLineEMBuild" Switch="log:embuild" DisplayName="Command line(embuild)" Description="Show executing embuild command line.">
+      </EnumValue>
+    </EnumProperty>
+
+    <BoolProperty Name="LegacyGlEmulation" Switch="legacy_gl_emulation" DisplayName="Legacy GL Emulation" Category="Emscripten" />
+    <BoolProperty Name="GlUnsafeOpts" Switch="gl_unsafe_opts" DisplayName="GL Unsafe Optimize" Category="Emscripten" />
+    <BoolProperty Name="GlFfpOnly" Switch="gl_ffp_only" DisplayName="GL FFP Only" Category="Emscripten" />
+    <EnumProperty Name="DisableExceptionCatching" DisplayName="Disable Exception Catching" Category="Emscripten">
+      <EnumValue Name="Yes" Switch="" DisplayName="Yes" />
+      <EnumValue Name="No" Switch="enable_exception_catching" DisplayName="No" />
+    </EnumProperty>
+    <BoolProperty Name="SafeHeap" Switch="safe_heap" DisplayName="Safe Heap" Category="Emscripten" />
+    <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
+    <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
+    <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
+    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
+
+    <StringListProperty Name="GNUDisableSpecificWarnings" DisplayName="Disable Specific Warnings" Description="Disable the desired warning numbers; put numbers in a semi-colon delimited list.     (/W[name])" Category="Advanced" Switch="W" F1Keyword="VC.Project.VCCLCompilerTool.DisableSpecificWarnings">
+    </StringListProperty>
+
+    <EnumProperty Name="CompileAs" DisplayName="컴파일 옵션" Description=".c 및 .cpp 파일에 대한 컴파일 언어 옵션을 선택합니다.     (/TC, /TP)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CompileAs">
+      <EnumValue Name="Default" Switch="" DisplayName="기본값" Description="기본값입니다.">
+      </EnumValue>
+      <EnumValue Name="CompileAsC" Switch="TC" DisplayName="C 코드로 컴파일" Description="C 코드로 컴파일합니다.">
+      </EnumValue>
+      <EnumValue Name="CompileAsCpp" Switch="TP" DisplayName="C++ 코드로 컴파일" Description="C++ 코드로 컴파일합니다.">
       </EnumValue>
     </EnumProperty>
     
@@ -351,14 +401,6 @@
   <EnumValue Name="StdCall" Switch="Gz" DisplayName="__stdcall" Description="C++ 멤버 함수와 __cdecl 또는 __fastcall로 표시된 함수를 제외한 모든 함수에 대해 __stdcall 호출 규칙을 지정합니다. 모든 __stdcall 함수에는 프로토타입이 있어야 합니다.">
   </EnumValue>
   <EnumValue Name="VectorCall" Switch="Gv" DisplayName="__vectorcall" Description="C++ 멤버 함수와 __cdecl, __fastcall 또는 __stdcall로 표시된 함수를 제외한 모든 함수에 대해 __vectorcall 호출 규칙을 지정합니다. 모든 __vectorcall 함수에는 프로토타입이 있어야 합니다.">
-  </EnumValue>
-</EnumProperty>
-<EnumProperty Name="CompileAs" DisplayName="컴파일 옵션" Description=".c 및 .cpp 파일에 대한 컴파일 언어 옵션을 선택합니다.     (/TC, /TP)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CompileAs">
-  <EnumValue Name="Default" Switch="" DisplayName="기본값" Description="기본값입니다.">
-  </EnumValue>
-  <EnumValue Name="CompileAsC" Switch="TC" DisplayName="C 코드로 컴파일" Description="C 코드로 컴파일합니다.">
-  </EnumValue>
-  <EnumValue Name="CompileAsCpp" Switch="TP" DisplayName="C++ 코드로 컴파일" Description="C++ 코드로 컴파일합니다.">
   </EnumValue>
 </EnumProperty>
 <StringListProperty Name="DisableSpecificWarnings" DisplayName="특정 경고 사용 안 함" Description="원하는 경고 번호를 사용하지 않도록 설정합니다. 세미콜론으로 구분된 목록에 경고 번호를 입력합니다.     (/wd[num])" Category="Advanced" Switch="wd" F1Keyword="VC.Project.VCCLCompilerTool.DisableSpecificWarnings">

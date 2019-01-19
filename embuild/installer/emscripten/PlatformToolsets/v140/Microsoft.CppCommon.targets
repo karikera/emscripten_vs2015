@@ -31,8 +31,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <TargetPath Condition="'$(TargetPath)' == ''">$([System.IO.Path]::Combine($(ProjectDir),$(OutDir)$(TargetName)$(TargetExt)))</TargetPath>
     <TargetFileName Condition=" '$(TargetFileName)'=='' ">$([System.IO.Path]::GetFileName('$(TargetPath)'))</TargetFileName>
     <TargetDir      Condition=" '$(TargetDir)'==''"      >$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))</TargetDir>
-    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)'==''">$(MSBuildThisFileDirectory)bin\nwjs-v0.14.7-win-ia32\nw.exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(LocalDebuggerCommandArguments)'==''">"$(TargetDir)"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)'==''">$(MSBuildThisFileDirectory)..\..\bin\nwjs-sdk-v0.34.1-win-x64\nw.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(LocalDebuggerCommandArguments)'==''">$(OutDir)</LocalDebuggerCommandArguments>
     <ExtensionsToDeleteOnClean>$(ExtensionsToDeleteOnClean);$(TargetPath).manifest;$(OutDir)$(TargetName).tlb;$(OutDir)$(TargetName).pdb;$(TargetPath);$(OutDir)$(TargetName).bsc;$(OutDir)$(TargetName).ilk;$(TargetPath).intermediate.manifest</ExtensionsToDeleteOnClean>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)'==''">$(IntDir)</IntermediateOutputPath>
 
@@ -88,7 +88,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
        ******************************************************************************************* -->
   <!-- Creates a connection between item names and the targets to build them. -->
   <ItemGroup>
-    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)js.xml" />
     <AvailableItemName Include="JS">
       <Targets>JS</Targets>
     </AvailableItemName>
@@ -247,19 +246,32 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         AdditionalIncludeDirectories       ="%(ClCompile.AdditionalIncludeDirectories)"
         AdditionalOptions                  ="%(ClCompile.AdditionalOptions)"
         Optimization                       ="%(ClCompile.Optimization)"
+        ISOStandardC                       ="%(ClCompile.ISOStandardC)"
+        ISOStandardCPP                     ="%(ClCompile.ISOStandardCPP)"
+        CompileAs                          ="%(ClCompile.CompileAs)"
         ObjectFileName                     ="%(ClCompile.ObjectFileName)"
         ToolExe                            ="$(CLToolExe)"
         DebugInformationFormat ="%(ClCompile.DebugInformationFormat)"
+        GNUDisableSpecificWarnings ="%(ClCompile.GNUDisableSpecificWarnings)"
         BuildOutput ="%(ClCompile.BuildOutput)"
         SuppressStartupBanner              ="%(ClCompile.SuppressStartupBanner)"
 
+        LegacyGlEmulation="%(ClCompile.LegacyGlEmulation)"
+        GlUnsafeOpts="%(ClCompile.GlUnsafeOpts)"
+        GlFfpOnly="%(ClCompile.GlFfpOnly)"
+        DisableExceptionCatching="%(ClCompile.DisableExceptionCatching)"
+        SafeHeap="%(ClCompile.SafeHeap)"
+        AllowMemoryGrowth="%(ClCompile.AllowMemoryGrowth)"
+        AbortingMalloc="%(ClCompile.AbortingMalloc)"
+        TotalMemory="%(ClCompile.TotalMemory)"
+        
         TrackerLogDirectory                ="%(ClCompile.TrackerLogDirectory)"
         MinimalRebuildFromTracking         ="%(ClCompile.MinimalRebuildFromTracking)"
         TrackFileAccess                    ="$(TrackFileAccess)"
         
         AcceptableNonZeroExitCodes         ="%(ClCompile.AcceptableNonZeroExitCodes)"
         YieldDuringToolExecution           ="$(ClYieldDuringToolExecution)"
-    >
+      >
     </CL>
     <!--
     
@@ -438,7 +450,45 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         ToolExe                        ="$(LinkToolExe)"
         ToolPath                       ="$(LinkToolPath)"
 
+        Optimization="%(Link.Optimization)"
         DebugInformationFormat ="%(Link.DebugInformationFormat)"
+        
+        LegacyGlEmulation="%(Link.LegacyGlEmulation)"
+        GlUnsafeOpts="%(Link.GlUnsafeOpts)"
+        GlFfpOnly="%(Link.GlFfpOnly)"
+        DisableExceptionCatching="%(Link.DisableExceptionCatching)"
+        DemangleSupport="%(Link.DemangleSupport)"
+        FullEs2="%(Link.FullEs2)"
+        Fetch="%(Link.Fetch)"
+        UseSDL="%(Link.UseSDL)"
+        SafeHeap="%(Link.SafeHeap)"
+        AllowMemoryGrowth="%(Link.AllowMemoryGrowth)"
+        AbortingMalloc="%(Link.AbortingMalloc)"
+        TotalMemory="%(Link.TotalMemory)"
+        Bind="%(Link.Bind)"
+        WASM="%(Link.WASM)"
+        
+        NWJS_Name="%(Link.NWJS_Name)"
+        NWJS_Description="%(Link.NWJS_Description)"
+        NWJS_Version="%(Link.NWJS_Version)"
+        NWJS_Keywords="%(Link.NWJS_Keywords)"
+        NWJS_Bugs="%(Link.NWJS_Bugs)"
+        NWJS_ChromiumArgs="%(Link.NWJS_ChromiumArgs)"
+        NWJS_Title="%(Link.NWJS_Title)"
+        NWJS_Width="%(Link.NWJS_Width)"
+        NWJS_Height="%(Link.NWJS_Height)"
+        NWJS_Toolbar="%(Link.NWJS_Toolbar)"
+        NWJS_Icon="%(Link.NWJS_Icon)"
+        NWJS_Position="%(Link.NWJS_Position)"
+        NWJS_Resizable="%(Link.NWJS_Resizable)"
+        NWJS_AlwaysOnTop="%(Link.NWJS_AlwaysOnTop)"
+        NWJS_Fullscreen="%(Link.NWJS_Fullscreen)"
+        NWJS_ShowInTaskbar="%(Link.NWJS_ShowInTaskbar)"
+        NWJS_Frame="%(Link.NWJS_Frame)"
+        NWJS_Show="%(Link.NWJS_Show)"
+        NWJS_Kiosk="%(Link.NWJS_Kiosk)"
+        NWJS_Transparent="%(Link.NWJS_Transparent)"
+        
         AcceptableNonZeroExitCodes     ="%(Link.AcceptableNonZeroExitCodes)"
         YieldDuringToolExecution       ="$(LinkYieldDuringToolExecution)"
         BuildOutput ="%(Link.BuildOutput)"
@@ -449,6 +499,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         TrackFileAccess                ="$(TrackFileAccess)"
         
     >
+
       <!--
       <Output TaskParameter="SkippedExecution" PropertyName="LinkSkippedExecution" />
       -->
@@ -586,27 +637,36 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </PropertyGroup>
 
     <LIB
-      Sources                         ="@(Lib)"
-      CommandLineTemplate ="%(Lib.CommandLineTemplate)"
+        Sources                         ="@(Lib)"
+        CommandLineTemplate ="%(Lib.CommandLineTemplate)"
         StandardOutputImportance ="High"
         StandardErrorImportance ="High"
 
-      AdditionalDependencies          ="%(Lib.AdditionalDependencies)"
-      AdditionalLibraryDirectories    ="%(Lib.AdditionalLibraryDirectories)"
-      AdditionalOptions               ="$(LibAdditionalOptions)"
+        AdditionalDependencies          ="%(Lib.AdditionalDependencies)"
+        AdditionalLibraryDirectories    ="%(Lib.AdditionalLibraryDirectories)"
+        AdditionalOptions               ="$(LibAdditionalOptions)"
       
-      OutputFile                      ="%(Lib.OutputFile)"
-    SuppressStartupBanner           ="%(Lib.SuppressStartupBanner)"
+        OutputFile                      ="%(Lib.OutputFile)"
+        SuppressStartupBanner           ="%(Lib.SuppressStartupBanner)"
 
-    ToolExe                         ="$(LIBToolExe)"
-    ToolPath                        ="$(LIBToolPath)"
+        LegacyGlEmulation="%(Lib.LegacyGlEmulation)"
+        GlUnsafeOpts="%(Lib.GlUnsafeOpts)"
+        GlFfpOnly="%(Lib.GlFfpOnly)"
+        DisableExceptionCatching="%(Lib.DisableExceptionCatching)"
+        SafeHeap="%(Lib.SafeHeap)"
+        AllowMemoryGrowth="%(Lib.AllowMemoryGrowth)"
+        AbortingMalloc="%(Lib.AbortingMalloc)"
+        TotalMemory="%(Lib.TotalMemory)"
+        
+        ToolExe                         ="$(LIBToolExe)"
+        ToolPath                        ="$(LIBToolPath)"
         BuildOutput ="%(Lib.BuildOutput)"
 
-    TrackerLogDirectory             ="%(Lib.TrackerLogDirectory)"
-    MinimalRebuildFromTracking      ="%(Lib.MinimalRebuildFromTracking)"
-    TrackFileAccess                 ="$(TrackFileAccess)"
+        TrackerLogDirectory             ="%(Lib.TrackerLogDirectory)"
+        MinimalRebuildFromTracking      ="%(Lib.MinimalRebuildFromTracking)"
+        TrackFileAccess                 ="$(TrackFileAccess)"
       
-    AcceptableNonZeroExitCodes      ="%(Lib.AcceptableNonZeroExitCodes)"
+        AcceptableNonZeroExitCodes      ="%(Lib.AcceptableNonZeroExitCodes)"
       >
     </LIB>
 

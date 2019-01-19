@@ -1,0 +1,15 @@
+{
+	"main": "",
+	"name": "example",
+	"version": "0.1.0",
+	"chromium-args": "--user-data-dir=\'./data/\'",
+,
+	"window": {
+		"title": "example",
+		"width": 640,
+		"height": 480,
+		"toolbar": true,
+		"position": "center",
+		"resizable": false
+	}
+}

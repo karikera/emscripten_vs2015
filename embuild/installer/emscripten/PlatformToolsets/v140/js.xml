@@ -5,22 +5,27 @@
     
     <Rule.Categories>
       <Category Name="General" DisplayName="General"/>
-      <Category Name="All Options" DisplayName="All Options" Subtype="Search"/>
-      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine"/>
     </Rule.Categories>
 
     <Rule.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="JS" Label="" HasConfigurationCondition="true"/>
     </Rule.DataSource>
 
+    <StringProperty
+		  Name="Dummy"
+		  DisplayName="Dummy"
+		  IncludeInCommandLine="False"
+      Category="General"
+      />
+    
     <StringProperty Name="ToolExe" Visible="False" IncludeInCommandLine="False" />
 
     <StringListProperty Name="Sources" IsRequired="true" Visible="False">
     </StringListProperty>
     
   </Rule>
-  
-  <ContentType Name="JavaScript" DisplayName="JavaScript" ItemType="JS">
-  </ContentType>
-  <FileExtension Name=".js" ContentType="JavaScript"/>
+
+  <ItemType Name="JS" DisplayName="JavaScript" />
+  <FileExtension Name=".js" ContentType="JavaScript" />
+  <ContentType Name="JavaScript" DisplayName="JavaScript" ItemType="JS" />
 </ProjectSchemaDefinitions>

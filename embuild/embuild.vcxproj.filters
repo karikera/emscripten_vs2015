@@ -41,9 +41,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="template.html" />
-    <None Include="installer\install.bat">
-      <Filter>소스 파일</Filter>
-    </None>
-    <None Include="package.json" />
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppBuild.targets" />
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppCommon.targets" />
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.props" />
+    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.targets" />
+    <None Include="installer\Emscripten\emscripten.props" />
+    <None Include="installer\Emscripten\Platform.Common.props" />
+    <None Include="installer\Emscripten\Platform.Default.props" />
+    <None Include="installer\Emscripten\Platform.props" />
+    <None Include="installer\Emscripten\Platform.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\ken-bin\kr3.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\cl.xml" />
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\js.xml" />
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\lib.xml" />
+    <Xml Include="installer\Emscripten\PlatformToolsets\v140\link.xml" />
   </ItemGroup>
 </Project>

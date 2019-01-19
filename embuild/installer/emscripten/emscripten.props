@@ -19,7 +19,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <CLToolExe>embuild.exe</CLToolExe>
     <CLToolPath></CLToolPath>
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
-    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess]</VEMCommonArguments>
+    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess][LegacyGlEmulation] [GlUnsafeOpts] [GlUnsafeOpts] [GlFfpOnly] [DisableExceptionCatching] [SafeHeap] [AllowMemoryGrowth] [AbortingMalloc] [TotalMemory] [OutliningLimit]</VEMCommonArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ConfigurationType)'=='StaticLibrary'">
     <TargetExt>.bc</TargetExt>
@@ -33,26 +33,97 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </JS>
     <ClCompile>
       <PreprocessorDefinitions>__EMSCRIPTEN__;__SSE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <CommandLineTemplate>@"[ToolExe]" [ObjectFileName] [PreprocessorDefinitions] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <CommandLineTemplate>@"[ToolExe]" [ObjectFileName] [PreprocessorDefinitions] [ISOStandardC] [ISOStandardCPP] [CompileAs] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] [GNUDisableSpecificWarnings] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
       <Optimization>Disabled</Optimization>
-      <ISOStandard>CPP14</ISOStandard>
+      <ISOStandardCPP>CPP1Z</ISOStandardCPP>
+      <ISOStandardC>C_2011</ISOStandardC>
+      <CompileAs></CompileAs>
       <Encoding>UTF-8</Encoding>
       <DebugInformationFormat>Max</DebugInformationFormat>
       <BuildOutput>FileName</BuildOutput>
+      <GNUDisableSpecificWarnings></GNUDisableSpecificWarnings>
+
+      <LegacyGlEmulation>false</LegacyGlEmulation>
+      <GlUnsafeOpts>false</GlUnsafeOpts>
+      <GlFfpOnly>false</GlFfpOnly>
+      <DisableExceptionCatching>No</DisableExceptionCatching>
+      <SafeHeap>false</SafeHeap>
+      <AllowMemoryGrowth>false</AllowMemoryGrowth>
+      <AbortingMalloc>false</AbortingMalloc>
+      <TotalMemory>16777216</TotalMemory>
     </ClCompile>
     <Lib>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources] [AdditionalDependencies]</CommandLineTemplate>
       <BuildOutput>FileName</BuildOutput>
+      <DisableExceptionCatching>No</DisableExceptionCatching>
+      <SafeHeap>false</SafeHeap>
+      <AllowMemoryGrowth>false</AllowMemoryGrowth>
+      <AbortingMalloc>false</AbortingMalloc>
+      <TotalMemory>16777216</TotalMemory>
     </Lib>
     <Link>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [DebugInformationFormat] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [Optimization] [DebugInformationFormat] [NWJS_Name] [NWJS_Description] [NWJS_Version] [NWJS_Keywords] [NWJS_Bugs] [NWJS_ChromiumArgs] [NWJS_Title] [NWJS_Width] [NWJS_Height] [NWJS_Toolbar] [NWJS_Icon] [NWJS_Position] [NWJS_Resizable] [NWJS_AlwaysOnTop] [NWJS_Fullscreen] [NWJS_ShowInTaskbar] [NWJS_Frame] [NWJS_Show] [NWJS_Kiosk] [NWJS_Transparent] [DemangleSupport] [Bind] [FullEs2] [UseSDL] [Fetch] $(VEMCommonArguments) [Sources] [WASM]</CommandLineTemplate>
+      <Optimization>Disabled</Optimization>
       <DebugInformationFormat>Max</DebugInformationFormat>
       <BuildOutput>FileName</BuildOutput>
+      <NWJS_Name>$(ProjectName)</NWJS_Name>
+      <NWJS_Description></NWJS_Description>
+      <NWJS_Version>0.1.0</NWJS_Version>
+      <NWJS_Keywords></NWJS_Keywords>
+      <NWJS_Bugs></NWJS_Bugs>
+      <NWJS_ChromiumArgs>--user-data-dir='./data/'</NWJS_ChromiumArgs>
+
+      <NWJS_Title>$(ProjectName)</NWJS_Title>
+      <NWJS_Width></NWJS_Width>
+      <NWJS_Height></NWJS_Height>
+      <NWJS_Toolbar>false</NWJS_Toolbar>
+      <NWJS_Icon></NWJS_Icon>
+      <NWJS_Position>Center</NWJS_Position>
+      <NWJS_Resizable>Resizable</NWJS_Resizable>
+      <NWJS_AlwaysOnTop>false</NWJS_AlwaysOnTop>
+      <NWJS_Fullscreen>false</NWJS_Fullscreen>
+      <NWJS_ShowInTaskbar>ShowInTaskbar</NWJS_ShowInTaskbar>
+      <NWJS_Frame>Frame</NWJS_Frame>
+      <NWJS_Show>Show</NWJS_Show>
+      <NWJS_Kiosk>false</NWJS_Kiosk>
+      <NWJS_Transparent>false</NWJS_Transparent>
+
+      <DemangleSupport>false</DemangleSupport>
+      <DisableExceptionCatching>No</DisableExceptionCatching>
+      <FullEs2>false</FullEs2>
+      <Fetch>true</Fetch>
+      <UseSDL>None</UseSDL>
+      <SafeHeap>false</SafeHeap>
+      <AllowMemoryGrowth>false</AllowMemoryGrowth>
+      <AbortingMalloc>false</AbortingMalloc>
+      <TotalMemory>16777216</TotalMemory>
+      <OutliningLimit></OutliningLimit>
+      <Bind>false</Bind>
+      <WASM>No</WASM>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
+    <ClCompile>
+      <SafeHeap>true</SafeHeap>
+    </ClCompile>
+    <Lib>
+      <SafeHeap>true</SafeHeap>
+    </Lib>
+    <Link>
+      <DevTool>true</DevTool>
+      <NWJS_Toolbar>true</NWJS_Toolbar>
+      <SafeHeap>true</SafeHeap>
+      <DemangleSupport>true</DemangleSupport>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)' == 'Release'">
     <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
+    <Link>
+      <Optimization>MaxSpeed</Optimization>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </Link>
   </ItemDefinitionGroup>
 </Project>
