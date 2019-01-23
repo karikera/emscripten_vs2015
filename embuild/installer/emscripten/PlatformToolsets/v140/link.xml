@@ -37,6 +37,10 @@
     <StringListProperty Name="Sources" IsRequired="true">
     </StringListProperty>
 
+    <StringListProperty Subtype="file" Name="AdditionalDependencies" DisplayName="Additional Dependencies" Description="링크 명령줄에 추가할 항목(예: kernel32.lib)을 지정합니다. " Category="Input" F1Keyword="VC.Project.VCLinkerTool.AdditionalDependencies">
+    </StringListProperty>
+    <StringListProperty Subtype="folder" Name="AdditionalLibraryDirectories" DisplayName="Additional Library Directories" Description="사용자가 환경 라이브러리 경로를 재정의할 수 있습니다. (/LIBPATH:folder)" Category="General" Switch="LIBPATH:" F1Keyword="VC.Project.VCLinkerTool.AdditionalLibraryDirectories">
+    </StringListProperty>
     <StringProperty Subtype="file" Name="OutputFile" DisplayName="출력 파일" Description="/OUT 옵션을 사용하면 링커에서 만드는 프로그램의 기본 이름과 위치는 무시됩니다." Category="General" Switch="Xo" Separator=":" F1Keyword="VC.Project.VCLinkerTool.OutputFile" />
     <BoolProperty Name="SuppressStartupBanner" DisplayName="시작 배너 표시 안 함" Description="/NOLOGO 옵션을 사용하면 저작권 메시지와 버전 번호가 표시되지 않습니다. " Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCLinkerTool.SuppressStartupBanner" />
 
@@ -115,8 +119,6 @@
     </BoolProperty>
     <BoolProperty Name="PerUserRedirection" DisplayName="사용자 단위 리디렉션" Description="출력 등록을 사용하도록 설정하면 사용자 단위 리디렉션을 통해 HKEY_CLASSES_ROOT에 대한 레지스트리 쓰기가 HKEY_CURRENT_USER로 리디렉션되도록 지정됩니다." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCLinkerTool.PerUserRedirection">
     </BoolProperty>
-    <StringListProperty Subtype="folder" Name="AdditionalLibraryDirectories" DisplayName="추가 라이브러리 디렉터리" Description="사용자가 환경 라이브러리 경로를 재정의할 수 있습니다. (/LIBPATH:folder)" Category="General" Switch="LIBPATH:" F1Keyword="VC.Project.VCLinkerTool.AdditionalLibraryDirectories">
-    </StringListProperty>
     <BoolProperty Name="LinkLibraryDependencies" DisplayName="라이브러리 종속성 링크" Description="프로젝트 종속성의 라이브러리 출력이 자동으로 링크되는지 여부를 지정합니다." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCLinkerTool.LinkLibraryDependencies">
       <BoolProperty.DataSource>
         <DataSource Persistence="ProjectFile" ItemType="ProjectReference" Label="" HasConfigurationCondition="true"/>
@@ -159,8 +161,6 @@
     </StringProperty>
     <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="추적기 로그 디렉터리" Description="추적기 로그 디렉터리입니다." Category="General" IncludeInCommandLine="false" Visible="false">
     </StringProperty>
-    <StringListProperty Subtype="file" Name="AdditionalDependencies" DisplayName="추가 종속성" Description="링크 명령줄에 추가할 항목(예: kernel32.lib)을 지정합니다. " Category="Input" F1Keyword="VC.Project.VCLinkerTool.AdditionalDependencies">
-    </StringListProperty>
     <BoolProperty Name="IgnoreAllDefaultLibraries" DisplayName="모든 기본 라이브러리 무시" Description="/NODEFAULTLIB 옵션을 사용하면 외부 참조를 확인할 때 검색하는 라이브러리 목록에서 하나 이상의 기본 라이브러리를 제거하도록 링커에 지시할 수 있습니다. " Category="Input" Switch="NODEFAULTLIB" F1Keyword="VC.Project.VCLinkerTool.IgnoreAllDefaultLibraries">
     </BoolProperty>
     <StringListProperty Subtype="file" Name="IgnoreSpecificDefaultLibraries" DisplayName="특정 기본 라이브러리 무시" Description="무시할 하나 이상의 기본 라이브러리 이름을 지정합니다. 라이브러리가 여러 개인 경우 세미콜론으로 구분합니다.     (/NODEFAULTLIB:[name, name, ...])" Category="Input" Switch="NODEFAULTLIB:" F1Keyword="VC.Project.VCLinkerTool.IgnoreDefaultLibraryNames">

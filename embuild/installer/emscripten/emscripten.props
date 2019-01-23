@@ -53,7 +53,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <TotalMemory>16777216</TotalMemory>
     </ClCompile>
     <Lib>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources] [AdditionalDependencies]</CommandLineTemplate>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources] [AdditionalLibraryDirectories] [AdditionalDependencies]</CommandLineTemplate>
       <BuildOutput>FileName</BuildOutput>
       <DisableExceptionCatching>No</DisableExceptionCatching>
       <SafeHeap>false</SafeHeap>
@@ -62,7 +62,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <TotalMemory>16777216</TotalMemory>
     </Lib>
     <Link>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [Optimization] [DebugInformationFormat] [NWJS_Name] [NWJS_Description] [NWJS_Version] [NWJS_Keywords] [NWJS_Bugs] [NWJS_ChromiumArgs] [NWJS_Title] [NWJS_Width] [NWJS_Height] [NWJS_Toolbar] [NWJS_Icon] [NWJS_Position] [NWJS_Resizable] [NWJS_AlwaysOnTop] [NWJS_Fullscreen] [NWJS_ShowInTaskbar] [NWJS_Frame] [NWJS_Show] [NWJS_Kiosk] [NWJS_Transparent] [DemangleSupport] [Bind] [FullEs2] [UseSDL] [Fetch] $(VEMCommonArguments) [Sources] [WASM]</CommandLineTemplate>
+      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [Optimization] [DebugInformationFormat] [NWJS_Name] [NWJS_Description] [NWJS_Version] [NWJS_Keywords] [NWJS_Bugs] [NWJS_ChromiumArgs] [NWJS_Title] [NWJS_Width] [NWJS_Height] [NWJS_Toolbar] [NWJS_Icon] [NWJS_Position] [NWJS_Resizable] [NWJS_AlwaysOnTop] [NWJS_Fullscreen] [NWJS_ShowInTaskbar] [NWJS_Frame] [NWJS_Show] [NWJS_Kiosk] [NWJS_Transparent] [DemangleSupport] [Bind] [FullEs2] [UseSDL] [Fetch] $(VEMCommonArguments) [AdditionalLibraryDirectories] [Sources] [WASM]</CommandLineTemplate>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>Max</DebugInformationFormat>
       <BuildOutput>FileName</BuildOutput>
