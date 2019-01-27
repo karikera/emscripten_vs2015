@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -106,14 +106,14 @@ Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Co
     <None Include="installer\Emscripten\Platform.targets">
       <SubType>Designer</SubType>
     </None>
-    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppBuild.targets" />
-    <None Include="installer\Emscripten\PlatformToolsets\v140\Microsoft.CppCommon.targets">
+    <None Include="installer\toolset_inner\Microsoft.CppBuild.targets" />
+    <None Include="installer\toolset_inner\Microsoft.CppCommon.targets">
       <SubType>Designer</SubType>
     </None>
-    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.props">
+    <None Include="installer\toolset_inner\Toolset.props">
       <SubType>Designer</SubType>
     </None>
-    <None Include="installer\Emscripten\PlatformToolsets\v140\Toolset.targets" />
+    <None Include="installer\toolset_inner\Toolset.targets" />
     <None Include="template.html" />
   </ItemGroup>
   <ItemGroup>
@@ -125,14 +125,14 @@ Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Co
     <Natvis Include="..\ken-bin\kr3.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="installer\Emscripten\PlatformToolsets\v140\cl.xml">
+    <Xml Include="installer\toolset_inner\cl.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="installer\Emscripten\PlatformToolsets\v140\js.xml" />
-    <Xml Include="installer\Emscripten\PlatformToolsets\v140\lib.xml">
+    <Xml Include="installer\toolset_inner\js.xml" />
+    <Xml Include="installer\toolset_inner\lib.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="installer\Emscripten\PlatformToolsets\v140\link.xml">
+    <Xml Include="installer\toolset_inner\link.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>
