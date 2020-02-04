@@ -59,28 +59,8 @@ namespace
 	bool tlogEnable = false;
 	bool noLogo = false;
 	bool enableToolBar = false;
+	bool emenvInherited = false;
 	AText16 cmdline;
-
-	AText nwjsName;
-	AText nwjsDesc;
-	AText nwjsVersion = "0.1.0";
-	AText nwjsBugs;
-	AText nwjsChromiumArgs;
-	Array<AText> nwjsKeywords;
-
-	AText nwjsTitle;
-	int nwjsWidth = 0, nwjsHeight = 0;
-	bool nwjsToolbar = false;
-	AText nwjsIcon;
-	AText nwjsPosition;
-	bool nwjsResizable = true;
-	bool nwjsAlwaysOnTop = false;
-	bool nwjsFullscreen = false;
-	bool nwjsShowInTaskbar = true;
-	bool nwjsFrame = true;
-	bool nwjsShow = true;
-	bool nwjsKiosk = false;
-	bool nwjstransparent = false;
 
 	TLog tlogCommand;
 	TLog tlogRead;
@@ -89,13 +69,14 @@ namespace
 	Set<Text16> libpath;
 }
 
-dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept;
-dword lib(AText16 &output, WRefArray<AText16> inputs) noexcept;
-dword link(AText16 &output, WRefArray<AText16> inputs) noexcept;
-void makeCmdLine() noexcept;
+void inheritEmEnv() throws(ErrorCode);
+dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) throws(ErrorCode);
+dword lib(AText16 &output, WRefArray<AText16> inputs) throws(ErrorCode);
+dword link(AText16& output, WRefArray<AText16> inputs) throws(ErrorCode);
+void makeCmdLine(wchar_t** args, int argn) noexcept;
 void loadTLog(Text16 commandTag, Text16 readTag, Text16 writeTag) noexcept;
 bool checkSourceModified(Text16 output, TSZ16 & fullPath);
-bool checkExeModified(AText16 &outputjs, WRefArray<AText16> inputs, bool exportDefExists, bool assetExists) noexcept;
+bool checkModified(AText16 &outputjs, WRefArray<AText16> inputs, bool exportDefExists, bool assetExists) throws(ErrorCode);
 template <typename LAMBDA>
 bool readDependency(File * file, const LAMBDA & lambda);
 
@@ -357,8 +338,8 @@ void readLibraryPath(Array<AText16> * inputs) noexcept
 
 int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 {
-	std::wcout.imbue(std::locale("Korean"));
-	
+	setlocale(LC_ALL, nullptr);
+			
 	Text16 exeDir = path16.dirname((Text16)unwide(args[0]));
 	
 	AText16 output;
@@ -368,8 +349,7 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 		Parameter16 param = {
 			{ ParamValue, u"D" },
 			{ ParamValue, u"log" },
-			{ ParamValue, u"stdc" },
-			{ ParamValue, u"stdcpp" },
+			{ ParamValue, u"std" },
 			{ ParamNoValue, u"bind" },
 			{ ParamValue, u"wasm" },
 
@@ -386,37 +366,15 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 			{ ParamNoValue, u"aborting_malloc" },
 			{ ParamValue, u"total_memory" },
 			{ ParamValue, u"outlining_limit"},
+			{ ParamValue, u"source_map_base"},
 			
 			{ ParamValue, u"charset" },
+			{ ParamNoValue, u"nologo"},
 			{ ParamNoValue, u"NOLOGO"},
 			{ ParamValue, u"tlog_directory"},
 			{ ParamNoValue, u"tlog_mintest"},
 			{ ParamNoValue, u"tlog_enable"},
 
-			{ ParamValue, u"nwjs_name" },
-			{ ParamValue, u"nwjs_desc" },
-			{ ParamValue, u"nwjs_version" },
-			{ ParamValue, u"nwjs_keyword" },
-			{ ParamValue, u"nwjs_bugs" },
-			{ ParamValue, u"nwjs_chromium_args" },
-			{ ParamValue, u"nwjs_title" },
-			{ ParamValue, u"nwjs_width" },
-			{ ParamValue, u"nwjs_height" },
-			{ ParamNoValue, u"nwjs_toolbar" },
-			{ ParamValue, u"nwjs_icon" },
-			{ ParamValue, u"nwjs_position" },
-			{ ParamNoValue, u"nwjs_noresizable" },
-			{ ParamNoValue, u"nwjs_always_on_top" },
-			{ ParamNoValue, u"nwjs_fullscreen" },
-			{ ParamNoValue, u"nwjs_hide_in_taskbar" },
-			{ ParamNoValue, u"nwjs_noframe" },
-			{ ParamNoValue, u"nwjs_hide" },
-			{ ParamNoValue, u"nwjs_kiosk" },
-			{ ParamNoValue, u"nwjs_transparent" },
-
-			{ ParamPrefix, u"Xo" },
-			{ ParamPrefix, u"Lo"},
-			{ ParamPrefix, u"Fo"},
 			{ ParamPrefix, u"g" },
 			{ ParamPrefix, u"O" },
 			{ ParamPrefix, u"I"},
@@ -425,6 +383,8 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 
 			{ ParamPrefix, u"TC"},
 			{ ParamPrefix, u"TP"},
+
+			{ ParamValue, u"t" },
 		};
 		param.start(argn, unwide(args));
 		bool res = param.foreach([&](Text16 name, Text16 value) {
@@ -434,20 +394,16 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 				newpath.change(u'\\', u'/');
 				inputs.push(newpath);
 			}
-			else if (name == u"Xo")
+			else if (name == u"t")
 			{
-				confType = ConfigurationType::Executable;
-				output = value;
-			}
-			else if (name == u"Lo")
-			{
-				confType = ConfigurationType::StaticLibrary;
-				output = value;
-			}
-			else if (name == u"Fo")
-			{
-				confType = ConfigurationType::Object;
-				output = value;
+				if (value == u"x")
+					confType = ConfigurationType::Executable;
+				else if (value == u"l")
+					confType = ConfigurationType::StaticLibrary;
+				else if (value == u"o")
+					confType = ConfigurationType::Object;
+				else
+					ucerr << u"Invalid build type: " << value << endl;
 			}
 			else if (name == u"TC")
 			{
@@ -468,14 +424,18 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 				else
 					ucerr << u"Invalid log option /" << name << u':' << value << u'\n';
 			}
-			else if (name == u"stdc")
+			else if (name == u"std")
 			{
-				langC << u" -std=" << value;
+				if (value.find(u"++") != nullptr)
+				{
+					langCPP << u" -std=" << value;
+				}
+				else
+				{
+					langC << u" -std=" << value;
+				}
 			}
-			else if (name == u"stdcpp")
-			{
-				langCPP << u" -std=" << value;
-			}
+			else if (name == u"source_map_base") ex_arguments << u" --source-map-base " << value;
 			else if (name == u"safe_heap") ex_arguments << u" -s SAFE_HEAP=1";
 			else if (name == u"legacy_gl_emulation") ex_arguments << u" -s LEGACY_GL_EMULATION=1";
 			else if (name == u"gl_unsafe_opts") ex_arguments << u" -s GL_UNSAFE_OPTS=1";
@@ -520,45 +480,22 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 				ex_arguments << u" -finput-charset=" << value;
 			else if (name == u"O")
 			{
-				if (value == u"0" || value == u"1" || value == u"2" || value == u"3" || value == u"s" || value == u"z")
+				if (value.startsWith(u"UT"))
+				{
+					value+= 2;
+					if (!value.empty() && *value == ':') value++;
+					output = value;
+				}
+				else if (value == u"0" || value == u"1" || value == u"2" || value == u"3" || value == u"s" || value == u"z")
 					ex_arguments << u" -"<< name << value;
 				else
 					ucerr << u"Invalid optimization option /" << name << value << u'\n';
 			}
+			else if (name == u"nologo") noLogo = true;
 			else if (name == u"NOLOGO") noLogo = true;
 			else if (name == u"tlog_directory") tlogDirectory = value;
 			else if (name == u"tlog_mintest") tlogMinTest = true;
 			else if (name == u"tlog_enable") tlogEnable = true;
-			else if (name == u"nwjs_name") nwjsName = toUtf8(value);
-			else if (name == u"nwjs_desc") nwjsDesc = toUtf8(value);
-			else if (name == u"nwjs_version") nwjsVersion = toUtf8(value);
-			else if (name == u"nwjs_keyword") nwjsKeywords.push((AText)toUtf8(value));
-			else if (name == u"nwjs_bugs") nwjsBugs = toUtf8(value);
-			else if (name == u"nwjs_chromium_args") nwjsChromiumArgs = toUtf8(value);
-			else if (name == u"nwjs_title") nwjsTitle = toUtf8(value);
-			else if (name == u"nwjs_width")
-			{
-				if (value.empty()) return;
-				if (!value.numberonly()) return;
-				nwjsWidth = value.to_uint();
-			}
-			else if (name == u"nwjs_height")
-			{
-				if (value.empty()) return;
-				if (!value.numberonly()) return;
-				nwjsHeight = value.to_uint();
-			}
-			else if (name == u"nwjs_toolbar") nwjsToolbar = true;
-			else if (name == u"nwjs_icon") nwjsIcon = toUtf8(value);
-			else if (name == u"nwjs_position") nwjsPosition = toUtf8(value);
-			else if (name == u"nwjs_noresizable") nwjsResizable = false;
-			else if (name == u"nwjs_always_on_top") nwjsAlwaysOnTop = true;
-			else if (name == u"nwjs_fullscreen") nwjsFullscreen = true;
-			else if (name == u"nwjs_hide_in_taskbar") nwjsShowInTaskbar = false;
-			else if (name == u"nwjs_noframe") nwjsFrame = false;
-			else if (name == u"nwjs_hide") nwjsShow = false;
-			else if (name == u"nwjs_kiosk") nwjsKiosk = true;
-			else if (name == u"nwjs_transparent") nwjstransparent = true;
 		});
 		if(!res)
 			return EINVAL;
@@ -574,122 +511,148 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 		ucout.flush();
 	}
 
-	if(!noLogo) ucout << u"emscripten_vs2015 beta" << endl;
+	if (!noLogo) ucout << u"emscripten_vs2015 beta" << endl;
 	if (tlogEnable)
 	{
 		File::createFullDirectory(tlogDirectory);
 	}
 
+	if (output == nullptr)
+	{
+		cerr << "Output is not defined. /OUT:[filename]\n";
+		return EINVAL;
+	}
+
+	if (inputs.empty())
+	{
+		cerr << "Input is not defined.\n";
+		return EINVAL;
+	}
+
 	dword res;
 	output.change(u'\\', u'/');
-	switch (confType)
+
+	try
 	{
-	case ConfigurationType::Object:
-	{
+		switch (confType)
 		{
-			wchar_t ** arg = args + 1;
-			wchar_t ** arge = args + argn;
-			for (; arg != arge; arg++)
+		case ConfigurationType::Object:
+		{
 			{
-				Text16 argtx = (Text16)unwide(*arg);
-				for (Text16 input : inputs)
+				wchar_t** arg = args + 1;
+				wchar_t** arge = args + argn;
+				for (; arg != arge; arg++)
 				{
-					if (argtx != input) continue;
-					goto _ignore;
+					Text16 argtx = (Text16)unwide(*arg);
+					if (argtx.startsWith(u'/'))
+					{
+						if (argtx.startsWith(u"/OUT:")) continue;
+					}
+					else
+					{
+						for (Text16 input : inputs)
+						{
+							if (argtx != input) continue;
+							goto _ignore;
+						}
+					}
+					cmdline << argtx << u' ';
+				_ignore:;
 				}
-				cmdline << argtx << u' ';
-			_ignore:;
 			}
-		}
 
-		readIncludePath();
+			readIncludePath();
 
-		cmdline << u' ';
-		size_t cmdEndIdx = cmdline.size();
-		size_t endIdx = output.size();
-		bool outputIsDirectory = path16.endsWithSeperator(output);
+			size_t cmdEndIdx = cmdline.size();
+			size_t endIdx = output.size();
+			bool outputIsDirectory = path16.endsWithSeperator(output);
 
-		if (tlogEnable)
-		{
-			loadTLog(u"CL", u"CL", u"CL");
-
-			TLogGroup group = tlogWrite.reset(inputs);
-
-			if (outputIsDirectory)
+			if (tlogEnable)
 			{
-				for (Text16 filepath : inputs)
+				loadTLog(u"CL", u"CL", u"CL");
+
+				TLogGroup group = tlogWrite.reset(inputs);
+
+				if (outputIsDirectory)
+				{
+					for (Text16 filepath : inputs)
+					{
+						output.cut_self(endIdx);
+						output << path16.basename(filepath) << u".bc";
+						group.putPath(output);
+						output.resize(output.size() - 3);
+						output << u".d";
+						group.putPath(output);
+					}
+				}
+				else
+				{
+					group.putPath(output);
+				}
+			}
+
+			for (Text16 filepath : inputs)
+			{
+				TSZ16 fullPath = path16.resolve(filepath);
+				fullPath << nullterm;
+
+				Text16 filename = path16.basename(filepath);
+
+				cmdline.cut_self(cmdEndIdx);
+				cmdline << fullPath;
+				tlogCommand.reset(fullPath).put(cmdline);
+
+				if (outputIsDirectory)
 				{
 					output.cut_self(endIdx);
-					output << path16.basename(filepath) << u".bc";
-					group.putPath(output);
-					output.resize(output.size() - 3);
-					output << u".d";
-					group.putPath(output);
+					output << filename;
 				}
-			}
-			else
-			{
-				group.putPath(output);
-			}
-		}
 
-		for (Text16 filepath : inputs)
+				res = compile(output, filepath, fullPath);
+				if (res != 0) break;
+			}
+			//_ZN 2kr 3ary 5_pri_ 8WrapImpl I N S0_ 4data 13AllocatedData I c N S_ 5Empty E E E c E C1Ev
+			//I N S0_ 4data 13AllocatedData I c N S_ 5Empty EEEcEC1Ev
+			break;
+		}
+		case ConfigurationType::StaticLibrary:
 		{
-			TSZ16 fullPath = path16.resolve(filepath);
-			fullPath << nullterm;
-
-			Text16 filename = path16.basename(filepath);
-
-			cmdline.cut_self(cmdEndIdx);
-			cmdline << fullPath;
-			tlogCommand.reset(fullPath).put(cmdline);
-
-			if (outputIsDirectory)
-			{
-				output.cut_self(endIdx);
-				output << filename;
-			}
-
-			res = compile(output, filepath, fullPath);
-			if (res != 0) break;
+			readLibraryPath(&inputs);
+			makeCmdLine(args, argn);
+			inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".lib"); });
+			inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".dll"); });
+			res = lib(output, inputs);
+			break;
 		}
-		//_ZN 2kr 3ary 5_pri_ 8WrapImpl I N S0_ 4data 13AllocatedData I c N S_ 5Empty E E E c E C1Ev
-		//I N S0_ 4data 13AllocatedData I c N S_ 5Empty EEEcEC1Ev
-		break;
+		case ConfigurationType::Executable:
+		{
+			readLibraryPath(&inputs);
+			makeCmdLine(args, argn);
+			inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".lib"); });
+			inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".dll"); });
+			res = link(output, inputs);
+			break;
+		}
+		default:
+			ucerr << u"Build type is not defined, Please set /to or /tx or /tl\n";
+			res = EINVAL;
+			break;
+		}
+		if (tlogEnable)
+		{
+			tlogCommand.save();
+			tlogRead.save();
+			tlogWrite.save();
+		}
+		return res;
 	}
-	case ConfigurationType::StaticLibrary:
+	catch (ErrorCode & err)
 	{
-		readLibraryPath(&inputs);
-		makeCmdLine();
-		inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".lib"); });
-		inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".dll"); });
-		res = lib(output, inputs);
-		break;
+		return (HRESULT)err;
 	}
-	case ConfigurationType::Executable:
-	{
-		readLibraryPath(&inputs);
-		makeCmdLine();
-		inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".lib"); });
-		inputs.removeMatchAllL([](Text16 input) { return input.endsWith_i(u".dll"); });
-		res = link(output, inputs);
-		break;
-	}
-	default:
-		ucerr << u"Unknown Build State\n";
-		res = EINVAL;
-		break;
-	}
-	if (tlogEnable)
-	{
-		tlogCommand.save();
-		tlogRead.save();
-		tlogWrite.save();
-	}
-	return res;
 }
 
-dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept
+dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) throws(ErrorCode)
 {
 	LanguageType thisLangType;
 
@@ -723,7 +686,6 @@ dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept
 		}
 	}
 
-
 	TSZ16 fullOutputPath = path16.resolve(output);
 
 	TSZ16 depfile;
@@ -739,7 +701,6 @@ dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept
 		return ENOENT;
 	}
 
-
 	if (!modified)
 	{
 		ucout << u"Skip " << filepath << u'\n';
@@ -753,6 +714,7 @@ dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept
 			ucout.flush();
 		}
 
+		inheritEmEnv();
 		Process process;
 		{
 			TSZ16 command;
@@ -878,47 +840,35 @@ dword compile(Text16 output, Text16 filepath, TSZ16 & fullPath) noexcept
 
 	return 0;
 }
-dword lib(AText16 &output, WRefArray<AText16> inputs) noexcept
+dword lib(AText16 &output, WRefArray<AText16> inputs) throws(ErrorCode)
 {
+	bool modified = false;
+
 	if (tlogEnable)
 	{
 		loadTLog(u"lib", u"Lib-link", u"Lib-link");
-		tlogCommand.reset(inputs).put(cmdline);
-		TLogGroup group = tlogWrite.reset(inputs);
-		group.put(path16.resolve(output));
-		group = tlogRead.reset(inputs);
-		group.putPath(inputs);
+
+		if (tlogCommand.reset(inputs, { cmdline })) modified = true;
+		if (tlogWrite.reset(inputs, { path16.resolve(output) })) modified = true;
+		if (tlogRead.reset(inputs, TLog::resolve(inputs))) modified = true;
 	}
 
 	try
 	{
-		filetime_t destTime = File::getLastModifiedTime(output.c_str());
-		for (AText16 &input : inputs)
+		if (checkModified(output, inputs, false, false)) modified = true;
+		if (!modified)
 		{
-			try
-			{
-				filetime_t srcTime = File::getLastModifiedTime(input.c_str());
-				if (srcTime > destTime)
-				{
-					File::remove(output.c_str());
-					goto _continueLinking;
-				}
-			}
-			catch (Error&)
-			{
-				ucout << u"File not found: " << input << endl;
-				return ENOENT;
-			}
+			ucout << u"Skip linking" << endl;
+			ucout.flush();
+			return 0;
 		}
-		ucout << u"Skip linking" << endl;
-		ucout.flush();
-		return 0;
 	}
-	catch (Error&)
+	catch (ErrorCode & err)
 	{
+		return (HRESULT)err;
 	}
-_continueLinking:
 
+	inheritEmEnv();
 	Process process;
 
 	{
@@ -964,10 +914,11 @@ _continueLinking:
 	}
 	return process.getExitCode();
 }
-dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
+dword link(AText16 &output, WRefArray<AText16> inputs) throws(ErrorCode)
 {
 	bool isExportDefExists = File::isFile(u"exports.def");
 	bool isAssetExists = File::isDirectory(u"asset");
+	bool modified = false;
 
 	AText16 outputjs;
 	Text16 outputExt = path16.extname(output);
@@ -977,30 +928,32 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 	if (tlogEnable)
 	{
 		loadTLog(u"link", u"link", u"link");
-		tlogCommand.reset(inputs).put(cmdline);
+		if (tlogCommand.reset(inputs, { cmdline })) modified = true;
 
-		TLogGroup group = tlogWrite.reset(inputs);
-		TSZ16 outputFull = path16.resolve(outputName);
-		pcstr16 extptr = outputFull.end();
-		outputFull << outputExt;
-		group.put(outputFull);
-		outputFull.cut_self(extptr);
-		outputFull << u".js";
-		group.put(outputFull);
-		outputFull << u".map";
-		group.put(outputFull);
+		{
+			Set<Text16> outputs;
+			TSZ16 outputFull = path16.resolve(outputName);
+			pcstr16 extptr = outputFull.end();
+			outputFull << outputExt;
+			outputs.insert(outputFull);
+			outputFull.cut_self(extptr);
+			outputFull << u".js";
+			outputs.insert(outputFull);
+			outputFull << u".map";
+			outputs.insert(outputFull);
+			if (tlogWrite.reset(inputs, outputs)) modified = true;
+		}
 
-		group = tlogRead.reset(inputs);
-		group.putPath(inputs);
+		if (tlogRead.reset(inputs, TLog::resolve(inputs))) modified = true;
 	}
 
 	// karikera: Need to check properties or project settings, but maybe visual studio do check
-	//if (!checkExeModified(outputjs, inputs, isExportDefExists, isAssetExists))
-	//{
-	//	ucout << u"Skip linking\n";
-	//	ucout.flush();
-	//	return 0;
-	//}
+	if (!checkModified(outputjs, inputs, isExportDefExists, isAssetExists))
+	{
+		ucout << u"Skip linking\n";
+		ucout.flush();
+		return 0;
+	}
 	
 	if (logOption == LogOption::FileName)
 	{
@@ -1008,6 +961,7 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 		ucout.flush();
 	}
 
+	inheritEmEnv();
 	Process process;
 
 	{
@@ -1052,6 +1006,7 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 			ucout << command << u'\n';
 			ucout.flush();
 		}
+
 		process.shell(command);
 	}
 
@@ -1078,7 +1033,6 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 			{
 				cout << line << '\n';
 			}
-			//
 
 			cout.flush();
 		}
@@ -1119,7 +1073,6 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 				startScript << "start();";
 			}
 			writer.put("start", startScript);
-			writer.put("title", nwjsTitle);
 
 			MappedFile srcfile(TSZ16() << compilerdir << u"template.html");
 			writer.write(srcfile.cast<char>());
@@ -1130,58 +1083,49 @@ dword link(AText16 &output, WRefArray<AText16> inputs) noexcept
 			cerr << "Cannot generate html" << endl;
 			cerr << "ERROR: " << err.getMessage<char>() << endl;
 		}
-		try
-		{
-			io::FOStream<char> fos = File::create(TSZ16() << outdir << u"package.json");
-				
-			fos << "{";
-			fos << "\n\t\"main\": \"" << toUtf8(htmlfilename) << "\"";
-			fos << ",\n\t\"name\": \"" << jsaddslashes(nwjsName) << "\"";
-			if (!nwjsDesc.empty()) fos << ",\n\t\"description\": \"" << jsaddslashes(nwjsDesc) << "\"";
-			fos << ",\n\t\"version\": \"" << jsaddslashes(nwjsVersion) << "\"";
-			if (!nwjsKeywords.empty())
-			{
-				fos << ",\n\t\"keywords\": [\n";
-				fos << "\t\t\"" << jsaddslashes(nwjsKeywords[0]) << "\"";
-				for (size_t i=1;i<nwjsKeywords.size();i++)
-				{
-					fos << ",\n\t\t\"" << jsaddslashes(nwjsKeywords[i]) << "\"";
-				}
-				fos << "\n\t]";
-			}
-			if (!nwjsBugs.empty()) fos << ",\n\t\"bugs\": \"" << jsaddslashes(nwjsBugs) << "\"\n";
-			if (!nwjsChromiumArgs.empty()) fos << ",\n\t\"chromium-args\": \"" << jsaddslashes(nwjsChromiumArgs) << "\"";
-			fos << ",\n\t\"window\": {";
-			fos << "\n\t\t\"title\": \"" << jsaddslashes(nwjsTitle) << "\"";
-			if (nwjsWidth) fos << ",\n\t\t\"width\": " << nwjsWidth;
-			if (nwjsHeight) fos << ",\n\t\t\"height\": " << nwjsHeight;
-			if (nwjsToolbar) fos << ",\n\t\t\"toolbar\": true";
-			if (!nwjsIcon.empty()) fos << ",\n\t\t\"icon\": \"" << jsaddslashes(nwjsIcon) << "\"";
-			if (!nwjsPosition.empty()) fos << ",\n\t\t\"position\": \"" << jsaddslashes(nwjsPosition) << "\"";
-			if (!nwjsResizable) fos << ",\n\t\t\"resizable\": false";
-			if (nwjsAlwaysOnTop) fos << ",\n\t\t\"alwaysOnTop\": true";
-			if (nwjsFullscreen) fos << ",\n\t\t\"fullscreen\": true";
-			if (!nwjsShowInTaskbar) fos << ",\n\t\t\"show_in_taskbar\": false";
-			if (!nwjsFrame) fos << ",\n\t\t\"frame\": false";
-			if (!nwjsShow) fos << ",\n\t\t\"show\": false";
-			if (nwjsKiosk) fos << ",\n\t\t\"kiosk\": true";
-			if (nwjstransparent) fos << ",\n\t\t\"transparent\": true";
-			fos << "\n\t}\n}";
-		}
-		catch (Error&)
-		{
-			ErrorCode err = ErrorCode::getLast();
-			cerr << "Cannot generate package.json" << endl;
-			cerr << "ERROR: " << err.getMessage<char>() << endl;
-		}
 	}
 
 	return exitCode;
 }
 
-void makeCmdLine() noexcept
+void inheritEmEnv() throws(ErrorCode)
 {
-	cmdline = (Text16)unwide(GetCommandLineW());
+	if (emenvInherited) return;
+	emenvInherited = true;
+
+	TText16 emsdk = EnviromentVariable16(u"EMSDK");
+	if (emsdk.empty())
+	{
+		cout << "EMSDK is NOT defined, Please define it" << endl;
+		throw ErrorCode(ENOENT);
+	}
+
+	emsdk << u"emsdk_env.bat";
+	Process proc;
+	proc.shell(emsdk);
+	TText envs = proc.readAllTemp();
+
+	for (Text line : envs.splitIterable('\n'))
+	{
+		if (line.endsWith('\r')) line.setEnd(line.end() - 1);
+		if (line.startsWith("EMSDK") || line.startsWith("PATH="))
+		{
+			Text varname = line.readwith('=');
+			*(char*)varname.end() = '\0';
+			*(char*)line.end() = '\0';
+			EnviromentVariable(varname.data()).set(line.data());
+		}
+	}
+}
+void makeCmdLine(wchar_t** args, int argn) noexcept
+{
+	wchar_t** arg = args + 1;
+	wchar_t** arge = args + argn;
+	for (; arg != arge; arg++)
+	{
+		Text16 argtx = (Text16)unwide(*arg);
+		cmdline << argtx << u' ';
+	}
 }
 void loadTLog(Text16 commandTag, Text16 readTag, Text16 writeTag) noexcept
 {
@@ -1213,25 +1157,55 @@ bool checkSourceModified(Text16 output, TSZ16 & fullPath)
 	}
 	return true;
 }
-bool checkExeModified(AText16 &outputjs, WRefArray<AText16> inputs, bool exportDefExists, bool assetExists) noexcept
+bool checkModified(AText16 &output, WRefArray<AText16> inputs, bool exportDefExists, bool assetExists) throws(ErrorCode)
 {
-	filetime_t outfiletime = File::getLastModifiedTime(outputjs.c_str());
-	for (AText16 & js : javascripts)
+	filetime_t destTime;
+	try
 	{
-		if (File::getLastModifiedTime(js.c_str()) > outfiletime)
-			return true;
+		output.c_str();
+		destTime = File::getLastModifiedTime(output.data());
+	}
+	catch (Error&)
+	{
 	}
 
-	for (AText16 & input : inputs)
+	for (AText16& input : javascripts)
 	{
-		if (File::getLastModifiedTime(input.c_str()) > outfiletime)
-			return true;
+		try
+		{
+			if (File::getLastModifiedTime(input.c_str()) > destTime)
+				return true;
+		}
+		catch (Error&)
+		{
+			ucout << u"File not found: " << input << endl;
+			throw ErrorCode(ENOENT);
+		}
 	}
 
-	if (exportDefExists && File::getLastModifiedTime(u"exports.def") > outfiletime)
+	bool modified = false;
+	for (AText16& input : inputs)
+	{
+		try
+		{
+			filetime_t srcTime = File::getLastModifiedTime(input.c_str());
+			if (srcTime > destTime)
+			{
+				File::remove(output.data());
+				return true;
+			}
+		}
+		catch (Error&)
+		{
+			ucout << u"File not found: " << input << endl;
+			throw ErrorCode(ENOENT);
+		}
+	}
+
+	if (exportDefExists && File::getLastModifiedTime(u"exports.def") > destTime)
 		return true;
 
-	if (assetExists && File::isDirectoryModified(u"asset", outfiletime))
+	if (assetExists && File::isDirectoryModified(u"asset", destTime))
 		return true;
 
 	return false;

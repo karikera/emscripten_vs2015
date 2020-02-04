@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
+  <Rule Name="Link" PageTemplate="tool" DisplayName="Linker" SwitchPrefix="/" Order="20">
+    
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General"/>
+      <!--
+    <Category Name="Input" DisplayName="Input" />
+    <Category Name="Manifest File" DisplayName="Manifest File" />
+      -->
+      <Category Name="Emscripten" DisplayName="Emscripten" />
+      <Category Name="Debugging" DisplayName="Debugging"/>
+      <!--
+    <Category Name="System" DisplayName="System" />
+      -->
+      <Category Name="Optimization" DisplayName="Optimization"/>
+      <!--
+    <Category Name="Embedded IDL" DisplayName="Embedded IDL" />
+    <Category Name="Windows Metadata" DisplayName="Windows Metadata" />
+      -->
+      <Category Name="Advanced" DisplayName="Advanced"/>
+      <Category Name="All Options" DisplayName="All Options" Subtype="Search"/>
+      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine"/>
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="Link" Label="" HasConfigurationCondition="true"/>
+    </Rule.DataSource>
+
+    <EnumProperty Name="Type" Visible="false">
+      <EnumValue Name="Object" Switch="t:o" />
+      <EnumValue Name="Executable" Switch="t:x" />
+      <EnumValue Name="Library" Switch="t:l" />
+    </EnumProperty>
+    
+    <StringProperty Name="TrackerLogDirectory" Visible="False" Switch="tlog_directory:" />
+    <BoolProperty Name="MinimalRebuildFromTracking" Switch="tlog_mintest" Visible="false" />
+    <BoolProperty Name="TrackFileAccess" Visible="False" Switch="tlog_enable" />
+
+    <StringListProperty Name="Sources" IsRequired="true">
+    </StringListProperty>
+
+    <StringListProperty Subtype="file" Name="AdditionalDependencies" DisplayName="Additional Dependencies" Description="Specifies additional items to add to the link command line. [i.e. kernel32.lib] " Category="Input" F1Keyword="VC.Project.VCLinkerTool.AdditionalDependencies">
+    </StringListProperty>
+    <StringListProperty Subtype="folder" Name="AdditionalLibraryDirectories" DisplayName="Additional Library Directories" Description="Allows the user to override the environmental library path. (/LIBPATH:folder)" Category="General" Switch="LIBPATH:" F1Keyword="VC.Project.VCLinkerTool.AdditionalLibraryDirectories">
+    </StringListProperty>
+    <StringProperty Subtype="file" Name="OutputFile" DisplayName="Output File" Description="The /OUT option overrides the default name and location of the program that the linker creates." Category="General" Switch="OUT" Separator=":" F1Keyword="VC.Project.VCLinkerTool.OutputFile">
+    </StringProperty>
+    <BoolProperty Name="SuppressStartupBanner" DisplayName="Suppress Startup Banner" Description="The /NOLOGO option prevents display of the copyright message and version number. " Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCLinkerTool.SuppressStartupBanner">
+    </BoolProperty>
+    <BoolProperty Name="LegacyGlEmulation" Switch="legacy_gl_emulation" DisplayName="Legacy GL Emulation" Category="Emscripten" />
+    <BoolProperty Name="GlUnsafeOpts" Switch="gl_unsafe_opts" DisplayName="GL Unsafe Optimize" Category="Emscripten" />
+    <BoolProperty Name="GlFfpOnly" Switch="gl_ffp_only" DisplayName="GL FFP Only" Category="Emscripten" />
+    <EnumProperty Name="DisableExceptionCatching" DisplayName="Disable Exception Catching" Category="Emscripten">
+      <EnumValue Name="Yes" Switch="" DisplayName="Yes" />
+      <EnumValue Name="No" Switch="enable_exception_catching" DisplayName="No" />
+    </EnumProperty>
+    <BoolProperty Name="DemangleSupport" Switch="demangle_support" DisplayName="Demangle Support" Category="Emscripten" />
+    <BoolProperty Name="FullEs2" Switch="full_es2" DisplayName="Full ES2" Category="Emscripten" />
+    <EnumProperty Name="UseSDL" DisplayName="UseSDL" Category="Emscripten">
+      <EnumValue Name="None" Switch="" DisplayName="None">
+      </EnumValue>
+      <EnumValue Name="SDL1" Switch="use_sdl:1">
+      </EnumValue>
+      <EnumValue Name="SDL2" Switch="use_sdl:2">
+      </EnumValue>
+    </EnumProperty>
+    <BoolProperty Name="Fetch" Switch="fetch" DisplayName="Fetch" Category="Emscripten" />
+    <BoolProperty Name="SafeHeap" Switch="safe_heap" DisplayName="Safe Heap" Category="Emscripten" />
+    <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
+    <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
+    <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
+    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
+    <BoolProperty Name="Bind" Switch="bind" Description="Bind" Category="Emscripten" />
+    <EnumProperty Name="WASM" Description="WASM" Category="Emscripten">
+      <EnumValue Name="NativeWASM" Switch="wasm:native-wasm" DisplayName="Native WASM" Description="Use native binary wasm support in the browser." />
+      <EnumValue Name="InterpretSExpr" Switch="wasm:interpret-s-expr" DisplayName="Interpret WAST" Description="Load a .wast, which contains wasm in s-expression format, and interpret it." />
+      <EnumValue Name="InterpretBinary" Switch="wasm:interpret-binary" DisplayName="Interpret Binary" Description="Load a .wasm, which contains wasm in binary format, and interpret it." />
+      <EnumValue Name="InterpretAsm2Wasm" Switch="wasm:interpret-asm2wasm" DisplayName="Interpret ASM to WASM" Description="Load .asm.js, compile to wasm on the fly, and interpret that." />
+      <EnumValue Name="AsmJS" Switch="wasm:asmjs" DisplayName="asm.js" Description="Load .asm.js and just run it, no wasm. Useful for comparisons, or as a fallback for browsers without WebAssembly support." />
+      <EnumValue Name="No" Switch="" DisplayName="No" />
+    </EnumProperty>
+    <StringProperty Name="SourceMapBase" Switch="source_map_base:" DisplayName="Source Map Base" Category="Emscripten" />
+
+    <EnumProperty Name="BuildOutput" DisplayName="Build Output" Description="Build Output" Category="Advanced">
+      <EnumValue Name="FileName" Switch="log:filename" DisplayName="File name only" Description="Show just file name.">
+      </EnumValue>
+      <EnumValue Name="CommandLineEMCC" Switch="log:emcc" DisplayName="Command line(emcc)" Description="Show executing emcc command line.">
+      </EnumValue>
+      <EnumValue Name="CommandLineEMBuild" Switch="log:embuild" DisplayName="Command line(embuild)" Description="Show executing embuild command line.">
+      </EnumValue>
+    </EnumProperty>
+    
+     <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+    </StringProperty>
+
+    <EnumProperty Name="DebugInformationFormat" DisplayName="Debug Information Format" Description="Specifies the type of debugging information generated by the compiler.  This requires compatible linker settings.    (/Z7, /Zi, /ZI)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.DebugInformationFormat">
+      <EnumValue Name="" Switch="" DisplayName="" Description="">
+      </EnumValue>
+      <EnumValue Name="None" Switch="g0" DisplayName="None" Description="Make no effort to keep code debuggable. Will discard LLVM debug information (this is done by default in -01 and higher).">
+      </EnumValue>
+      <EnumValue Name="Whitespace" Switch="g1" DisplayName="Whitespace" Description="Preserve whitespace (do not minify).">
+      </EnumValue>
+      <EnumValue Name="Function" Switch="g2" DisplayName="Function" Description="Preserve function names.">
+      </EnumValue>
+      <EnumValue Name="Variable" Switch="g3" DisplayName="Variable" Description="Preserve variable names.">
+      </EnumValue>
+      <EnumValue Name="Max" Switch="g4" DisplayName="Max" Description="Preserve LLVM debug information. This is the highest level of debuggability. If -g was used when compiling the C/C++ sources, this shows line number debug comments, and generates source maps.">
+      </EnumValue>
+    </EnumProperty>
+
+    <EnumProperty Name="Optimization" DisplayName="Optimization" Description="Select option for code optimization; choose Custom to use specific optimization options.     (/O0, /O1, /O2, /O3, /Os, /Oz)" Category="Optimization">
+      <EnumValue Name="Custom" Switch="" DisplayName="Custom" Description="Custom Optimization">
+      </EnumValue>
+      <EnumValue Name="Disabled" Switch="O0" DisplayName="Disabled" Description="No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.">
+      </EnumValue>
+      <EnumValue Name="Simple" Switch="O1" DisplayName="Simple" Description="Simple optimizations. These include using asm.js, LLVM -O1 optimizations, relooping, removing runtime assertions and C++ exception catching, and enabling -s ALIASING_FUNCTION_POINTERS=1. This is the recommended setting when you want a reasonably optimized build that is generated as quickly as possible (it builds much faster than -O2).">
+      </EnumValue>
+      <EnumValue Name="JS2" Switch="O2" DisplayName="JS-level" Description="Like -O1, but with various JavaScript-level optimizations and LLVM -O3 optimizations.">
+      </EnumValue>
+      <EnumValue Name="JS3" Switch="O3" DisplayName="Additional JS-level" Description="Like -O2, but with additional JavaScript optimizations that can take a significant amount of compilation time.">
+      </EnumValue>
+      <EnumValue Name="MinSpace" Switch="Os" DisplayName="Reduce code size" Description="Like -O3, but with extra optimizations that reduce code size at the expense of performance. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+      <EnumValue Name="MaxSpeed" Switch="Oz" DisplayName="Reduce code size further" Description="Like -Os, but reduces code size even further. This can effect both bitcode generation and JavaScript.">
+      </EnumValue>
+    </EnumProperty>
+
+    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+    </StringProperty>
+    <BoolProperty Name="LinkDLL" Switch="DLL" Visible="false">
+    </BoolProperty>
+    <BoolProperty Name="BuildingInIde" Visible="false">
+    </BoolProperty>
+  </Rule>
+</ProjectSchemaDefinitions>

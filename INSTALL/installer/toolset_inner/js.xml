@@ -18,8 +18,6 @@
       Category="General"
       />
     
-    <StringProperty Name="ToolExe" Visible="False" IncludeInCommandLine="False" />
-
     <StringListProperty Name="Sources" IsRequired="true" Visible="False">
     </StringListProperty>
     

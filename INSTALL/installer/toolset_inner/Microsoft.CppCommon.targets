@@ -27,14 +27,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     
     <!-- Correct OutputPath as it may be out of sync with OutDir -->
     <OutputPath>$(OutDir)</OutputPath>
-    
     <TargetPath Condition="'$(TargetPath)' == ''">$([System.IO.Path]::Combine($(ProjectDir),$(OutDir)$(TargetName)$(TargetExt)))</TargetPath>
     <TargetFileName Condition=" '$(TargetFileName)'=='' ">$([System.IO.Path]::GetFileName('$(TargetPath)'))</TargetFileName>
     <TargetDir      Condition=" '$(TargetDir)'==''"      >$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))</TargetDir>
-    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)'==''">$(MSBuildThisFileDirectory)..\..\bin\nwjs-sdk-v0.34.1-win-x64\nw.exe</LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments Condition="'$(LocalDebuggerCommandArguments)'==''">$(OutDir)</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)'==''">$(MSBuildThisFileDirectory)..\..\bin\emviewer.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments Condition="'$(LocalDebuggerCommandArguments)'==''"></LocalDebuggerCommandArguments>
+    <LocalDebuggerEnvironment Condition="'$(LocalDebuggerEnvironment)'==''">EMVIEWER_URL=$(TargetFileName)
+EMVIEWER_APP=$(OutDir)</LocalDebuggerEnvironment>
     <ExtensionsToDeleteOnClean>$(ExtensionsToDeleteOnClean);$(TargetPath).manifest;$(OutDir)$(TargetName).tlb;$(OutDir)$(TargetName).pdb;$(TargetPath);$(OutDir)$(TargetName).bsc;$(OutDir)$(TargetName).ilk;$(TargetPath).intermediate.manifest</ExtensionsToDeleteOnClean>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)'==''">$(IntDir)</IntermediateOutputPath>
+    <LocalDebuggerDebuggerType Condition="'$(LocalDebuggerDebuggerType)'==''">JavaScriptForWebView2</LocalDebuggerDebuggerType>
 
     <!-- Set AppxPackageDir before OutDirWasSpecified is set false -->
     <AppxPackageDir Condition=" '$(OutDirWasSpecified)' == 'true' ">$(OutDir)AppPackages\</AppxPackageDir>
@@ -238,6 +240,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         Sources                            ="@(ClCompile)"
         
         CommandLineTemplate ="%(ClCompile.CommandLineTemplate)"
+        Type ="%(ClCompile.Type)"
         StandardOutputImportance ="High"
         StandardErrorImportance ="High"
         Encoding ="%(ClCompile.Encoding)"
@@ -246,11 +249,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         AdditionalIncludeDirectories       ="%(ClCompile.AdditionalIncludeDirectories)"
         AdditionalOptions                  ="%(ClCompile.AdditionalOptions)"
         Optimization                       ="%(ClCompile.Optimization)"
-        ISOStandardC                       ="%(ClCompile.ISOStandardC)"
-        ISOStandardCPP                     ="%(ClCompile.ISOStandardCPP)"
+        LanguageStandardC                  ="%(ClCompile.LanguageStandardC)"
+        LanguageStandard                   ="%(ClCompile.LanguageStandard)"
         CompileAs                          ="%(ClCompile.CompileAs)"
-        ObjectFileName                     ="%(ClCompile.ObjectFileName)"
-        ToolExe                            ="$(CLToolExe)"
+        ObjectFileName                     =":%(ClCompile.ObjectFileName)"
         DebugInformationFormat ="%(ClCompile.DebugInformationFormat)"
         GNUDisableSpecificWarnings ="%(ClCompile.GNUDisableSpecificWarnings)"
         BuildOutput ="%(ClCompile.BuildOutput)"
@@ -264,6 +266,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         AllowMemoryGrowth="%(ClCompile.AllowMemoryGrowth)"
         AbortingMalloc="%(ClCompile.AbortingMalloc)"
         TotalMemory="%(ClCompile.TotalMemory)"
+        OutliningLimit="%(ClCompile.OutliningLimit)"
         
         TrackerLogDirectory                ="%(ClCompile.TrackerLogDirectory)"
         MinimalRebuildFromTracking         ="%(ClCompile.MinimalRebuildFromTracking)"
@@ -351,7 +354,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         TLogReadFiles                      ="@(CLTLogReadFiles)"
         TLogWriteFiles                     ="@(CLTLogWriteFiles)"
         
-        ToolPath                           ="$(CLToolPath)"
         ToolArchitecture                   ="$(CLToolArchitecture)"
         TrackerFrameworkPath               ="$(CLTrackerFrameworkPath)"
         TrackerSdkPath                     ="$(CLTrackerSdkPath)"
@@ -441,14 +443,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <Link
         BuildingInIDE                  ="$(BuildingInsideVisualStudio)"
         Sources                        ="@(Link)"
+        
         CommandLineTemplate ="%(Link.CommandLineTemplate)"
+        Type ="%(Link.Type)"
         StandardOutputImportance ="High"
         StandardErrorImportance ="High"
 
-        OutputFile                     ="%(Link.OutputFile)"
-
-        ToolExe                        ="$(LinkToolExe)"
-        ToolPath                       ="$(LinkToolPath)"
+        OutputFile                     =":%(Link.OutputFile)"
 
         Optimization="%(Link.Optimization)"
         DebugInformationFormat ="%(Link.DebugInformationFormat)"
@@ -465,29 +466,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         AllowMemoryGrowth="%(Link.AllowMemoryGrowth)"
         AbortingMalloc="%(Link.AbortingMalloc)"
         TotalMemory="%(Link.TotalMemory)"
+        OutliningLimit="%(Link.OutliningLimit)"
+        SourceMapBase="%(Link.SourceMapBase)"
         Bind="%(Link.Bind)"
         WASM="%(Link.WASM)"
-        
-        NWJS_Name="%(Link.NWJS_Name)"
-        NWJS_Description="%(Link.NWJS_Description)"
-        NWJS_Version="%(Link.NWJS_Version)"
-        NWJS_Keywords="%(Link.NWJS_Keywords)"
-        NWJS_Bugs="%(Link.NWJS_Bugs)"
-        NWJS_ChromiumArgs="%(Link.NWJS_ChromiumArgs)"
-        NWJS_Title="%(Link.NWJS_Title)"
-        NWJS_Width="%(Link.NWJS_Width)"
-        NWJS_Height="%(Link.NWJS_Height)"
-        NWJS_Toolbar="%(Link.NWJS_Toolbar)"
-        NWJS_Icon="%(Link.NWJS_Icon)"
-        NWJS_Position="%(Link.NWJS_Position)"
-        NWJS_Resizable="%(Link.NWJS_Resizable)"
-        NWJS_AlwaysOnTop="%(Link.NWJS_AlwaysOnTop)"
-        NWJS_Fullscreen="%(Link.NWJS_Fullscreen)"
-        NWJS_ShowInTaskbar="%(Link.NWJS_ShowInTaskbar)"
-        NWJS_Frame="%(Link.NWJS_Frame)"
-        NWJS_Show="%(Link.NWJS_Show)"
-        NWJS_Kiosk="%(Link.NWJS_Kiosk)"
-        NWJS_Transparent="%(Link.NWJS_Transparent)"
         
         AcceptableNonZeroExitCodes     ="%(Link.AcceptableNonZeroExitCodes)"
         YieldDuringToolExecution       ="$(LinkYieldDuringToolExecution)"
@@ -638,15 +620,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <LIB
         Sources                         ="@(Lib)"
-        CommandLineTemplate ="%(Lib.CommandLineTemplate)"
         StandardOutputImportance ="High"
         StandardErrorImportance ="High"
 
+        CommandLineTemplate ="%(Lib.CommandLineTemplate)"
+        Type ="%(Lib.Type)"
         AdditionalDependencies          ="%(Lib.AdditionalDependencies)"
         AdditionalLibraryDirectories    ="%(Lib.AdditionalLibraryDirectories)"
         AdditionalOptions               ="$(LibAdditionalOptions)"
       
-        OutputFile                      ="%(Lib.OutputFile)"
+        OutputFile                      =":%(Lib.OutputFile)"
         SuppressStartupBanner           ="%(Lib.SuppressStartupBanner)"
 
         LegacyGlEmulation="%(Lib.LegacyGlEmulation)"
@@ -657,9 +640,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         AllowMemoryGrowth="%(Lib.AllowMemoryGrowth)"
         AbortingMalloc="%(Lib.AbortingMalloc)"
         TotalMemory="%(Lib.TotalMemory)"
+        OutliningLimit="%(Lib.OutliningLimit)"
         
-        ToolExe                         ="$(LIBToolExe)"
-        ToolPath                        ="$(LIBToolPath)"
         BuildOutput ="%(Lib.BuildOutput)"
 
         TrackerLogDirectory             ="%(Lib.TrackerLogDirectory)"

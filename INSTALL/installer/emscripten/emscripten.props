@@ -12,14 +12,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LIBToolExe>embuild.exe</LIBToolExe>
-    <LIBToolPath></LIBToolPath>
-    <LinkToolExe>embuild.exe</LinkToolExe>
-    <LinkToolPath></LinkToolPath>
-    <CLToolExe>embuild.exe</CLToolExe>
-    <CLToolPath></CLToolPath>
+    <WindowsSDKDir>!</WindowsSDKDir>
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
-    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess][LegacyGlEmulation] [GlUnsafeOpts] [GlUnsafeOpts] [GlFfpOnly] [DisableExceptionCatching] [SafeHeap] [AllowMemoryGrowth] [AbortingMalloc] [TotalMemory] [OutliningLimit]</VEMCommonArguments>
+    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess] [LegacyGlEmulation] [GlUnsafeOpts] [GlUnsafeOpts] [GlFfpOnly] [DisableExceptionCatching] [SafeHeap] [AllowMemoryGrowth] [AbortingMalloc] [TotalMemory] [OutliningLimit]</VEMCommonArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ConfigurationType)'=='StaticLibrary'">
     <TargetExt>.bc</TargetExt>
@@ -32,11 +27,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <CommandLineTemplate>@echo Import [Sources]</CommandLineTemplate>
     </JS>
     <ClCompile>
+      <Type>Object</Type>
       <PreprocessorDefinitions>__EMSCRIPTEN__;__SSE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <CommandLineTemplate>@"[ToolExe]" [ObjectFileName] [PreprocessorDefinitions] [ISOStandardC] [ISOStandardCPP] [CompileAs] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] [GNUDisableSpecificWarnings] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
+      <CommandLineTemplate>@embuild [ObjectFileName] [Type] [PreprocessorDefinitions] [LanguageStandardC] [LanguageStandard] [CompileAs] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] [GNUDisableSpecificWarnings] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
       <Optimization>Disabled</Optimization>
-      <ISOStandardCPP>CPP1Z</ISOStandardCPP>
-      <ISOStandardC>C_2011</ISOStandardC>
+      <LanguageStandard>CPP1Z</LanguageStandard>
+      <LanguageStandardC>C_2011</LanguageStandardC>
       <CompileAs></CompileAs>
       <Encoding>UTF-8</Encoding>
       <DebugInformationFormat>Max</DebugInformationFormat>
@@ -53,7 +49,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <TotalMemory>16777216</TotalMemory>
     </ClCompile>
     <Lib>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] $(VEMCommonArguments) [Sources] [AdditionalLibraryDirectories] [AdditionalDependencies]</CommandLineTemplate>
+      <Type>Library</Type>
+      <CommandLineTemplate>@embuild [OutputFile] [Type] $(VEMCommonArguments) [Sources] [AdditionalLibraryDirectories] [AdditionalDependencies]</CommandLineTemplate>
       <BuildOutput>FileName</BuildOutput>
       <DisableExceptionCatching>No</DisableExceptionCatching>
       <SafeHeap>false</SafeHeap>
@@ -62,32 +59,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <TotalMemory>16777216</TotalMemory>
     </Lib>
     <Link>
-      <CommandLineTemplate>@"[ToolExe]" [OutputFile] [Optimization] [DebugInformationFormat] [NWJS_Name] [NWJS_Description] [NWJS_Version] [NWJS_Keywords] [NWJS_Bugs] [NWJS_ChromiumArgs] [NWJS_Title] [NWJS_Width] [NWJS_Height] [NWJS_Toolbar] [NWJS_Icon] [NWJS_Position] [NWJS_Resizable] [NWJS_AlwaysOnTop] [NWJS_Fullscreen] [NWJS_ShowInTaskbar] [NWJS_Frame] [NWJS_Show] [NWJS_Kiosk] [NWJS_Transparent] [DemangleSupport] [Bind] [FullEs2] [UseSDL] [Fetch] $(VEMCommonArguments) [AdditionalLibraryDirectories] [Sources] [WASM]</CommandLineTemplate>
+      <Type>Executable</Type>
+      <CommandLineTemplate>@embuild [OutputFile] [Type] [Optimization] [DebugInformationFormat] [DemangleSupport] [Bind] [FullEs2] [UseSDL] [Fetch] $(VEMCommonArguments) [AdditionalLibraryDirectories] [Sources] [WASM] [SourceMapBase]</CommandLineTemplate>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>Max</DebugInformationFormat>
       <BuildOutput>FileName</BuildOutput>
-      <NWJS_Name>$(ProjectName)</NWJS_Name>
-      <NWJS_Description></NWJS_Description>
-      <NWJS_Version>0.1.0</NWJS_Version>
-      <NWJS_Keywords></NWJS_Keywords>
-      <NWJS_Bugs></NWJS_Bugs>
-      <NWJS_ChromiumArgs>--user-data-dir='./data/'</NWJS_ChromiumArgs>
-
-      <NWJS_Title>$(ProjectName)</NWJS_Title>
-      <NWJS_Width></NWJS_Width>
-      <NWJS_Height></NWJS_Height>
-      <NWJS_Toolbar>false</NWJS_Toolbar>
-      <NWJS_Icon></NWJS_Icon>
-      <NWJS_Position>Center</NWJS_Position>
-      <NWJS_Resizable>Resizable</NWJS_Resizable>
-      <NWJS_AlwaysOnTop>false</NWJS_AlwaysOnTop>
-      <NWJS_Fullscreen>false</NWJS_Fullscreen>
-      <NWJS_ShowInTaskbar>ShowInTaskbar</NWJS_ShowInTaskbar>
-      <NWJS_Frame>Frame</NWJS_Frame>
-      <NWJS_Show>Show</NWJS_Show>
-      <NWJS_Kiosk>false</NWJS_Kiosk>
-      <NWJS_Transparent>false</NWJS_Transparent>
-
+      
       <DemangleSupport>false</DemangleSupport>
       <DisableExceptionCatching>No</DisableExceptionCatching>
       <FullEs2>false</FullEs2>
@@ -98,6 +75,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <AbortingMalloc>false</AbortingMalloc>
       <TotalMemory>16777216</TotalMemory>
       <OutliningLimit></OutliningLimit>
+      <SourceMapBase>file://$(OutDir.Replace(' ','%20').Replace('\', '/'))</SourceMapBase>
       <Bind>false</Bind>
       <WASM>No</WASM>
     </Link>
@@ -111,7 +89,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </Lib>
     <Link>
       <DevTool>true</DevTool>
-      <NWJS_Toolbar>true</NWJS_Toolbar>
       <SafeHeap>true</SafeHeap>
       <DemangleSupport>true</DemangleSupport>
     </Link>

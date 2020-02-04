@@ -2,8 +2,7 @@
 	"main": "",
 	"name": "example",
 	"version": "0.1.0",
-	"chromium-args": "--user-data-dir=\'./data/\'",
-,
+	"chromium-args": "--user-data-dir='./data/'",
 	"window": {
 		"title": "example",
 		"width": 640,

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{A9E2C61F-8705-4762-93FF-75EB64675385}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ken-bin\KR.props" />
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ken-bin\KR.props" />
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ken-bin\KR.props" />
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\ken-bin\KR.props" />
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakeOutput>INSTALL.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</NMakeBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeOutput>INSTALL.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</NMakeBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeOutput>INSTALL.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</NMakeBuildCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeOutput>INSTALL.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeBuildCommandLine>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</NMakeBuildCommandLine>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PostBuildEvent />
+    <CustomBuild>
+      <Command>kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message>%(Identity) copying</Message>
+      <Outputs>$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <PostBuildEvent>
+      <Command>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PostBuildEvent />
+    <CustomBuild>
+      <Command>kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message>%(Identity) copying</Message>
+      <Outputs>$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <PostBuildEvent>
+      <Command>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PostBuildEvent />
+    <CustomBuild>
+      <Command>kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message>%(Identity) copying</Message>
+      <Outputs>$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <PostBuildEvent>
+      <Command>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PostBuildEvent />
+    <CustomBuild>
+      <Command>kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message>%(Identity) copying</Message>
+      <Outputs>$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <PostBuildEvent>
+      <Command>Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="install.bat">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">echo DONE&gt;$(IntDir)%(Identity).out</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo DONE&gt;$(IntDir)%(Identity).out</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">echo DONE&gt;$(IntDir)%(Identity).out</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo DONE&gt;$(IntDir)%(Identity).out</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Identity).out</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Identity).out</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Identity).out</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Identity).out</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Identity)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Identity)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Identity)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Identity)</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe;$(InstallerDir)installer\emscripten\bin\embuild.exe;$(InstallerDir)installer\emscripten\bin\emviewer.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe;$(InstallerDir)installer\emscripten\bin\embuild.exe;$(InstallerDir)installer\emscripten\bin\emviewer.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe;$(InstallerDir)installer\emscripten\bin\embuild.exe;$(InstallerDir)installer\emscripten\bin\emviewer.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer\installer.exe;$(InstallerDir)installer\emscripten\bin\embuild.exe;$(InstallerDir)installer\emscripten\bin\emviewer.exe;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\embuild\embuild.vcxproj">
+      <Project>{b5ff482d-35f5-430c-9382-178c9de46730}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\emviewer\emviewer.vcxproj">
+      <Project>{c64ded23-cbbb-4314-a5c9-319e236159aa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\installer\installer.vcxproj">
+      <Project>{c6930e55-626d-41a0-9aa2-ae0936250939}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="installer\emscripten\emscripten.props">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\emscripten\Platform.Common.props">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\emscripten\Platform.Default.props">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\emscripten\Platform.props">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\emscripten\Platform.targets">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\toolset_inner\Microsoft.CppBuild.targets">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\toolset_inner\Microsoft.CppCommon.targets">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\toolset_inner\Toolset.props">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="installer\toolset_inner\Toolset.targets">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="installer\toolset_inner\cl.xml" />
+    <CustomBuild Include="installer\toolset_inner\js.xml" />
+    <CustomBuild Include="installer\toolset_inner\lib.xml" />
+    <CustomBuild Include="installer\toolset_inner\link.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="installer\emscripten\bin\template.html" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

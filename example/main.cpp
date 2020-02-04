@@ -16,7 +16,7 @@ int main(int argn, char ** args)
 {
 	canvasCreate();
 	const char *test = "한글한글";
-	EM_ASM_(alert(Pointer_stringify($0),4 ),test);
+	EM_ASM_(alert(UTF8ToString($0),4 ),test);
 	emscripten_set_main_loop(main_loop, 0, true);
 	return 0;
 }

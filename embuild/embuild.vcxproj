@@ -58,24 +58,54 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\ken-bin\KR.props" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="..\envvar.props" />
+  </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>set InstallerDir=$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)
-mkdir %InstallerDir% 2&gt;NUL
-kcopy "$(ProjectDir)installer" "%InstallerDir%"
-kcopy "%InstallerDir%\Emscripten\PlatformToolsets\v140" "%InstallerDir%\Emscripten\PlatformToolsets\v141"
-copy "$(TargetPath)" "%InstallerDir%\emscripten\bin\$(TargetFileName)"
-copy "$(ProjectDir)template.html" "%InstallerDir%\emscripten\bin\template.html"
-Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Configuration)\installer.exe"
+      <Command>kcopy "$(TargetPath)" "$(InstallerDir)installer\emscripten\bin\$(TargetFileName)"
 </Command>
     </PostBuildEvent>
+    <CustomBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Identity) copying</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Identity) copying</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Identity) copying</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">kcopy "$(ProjectDir)%(Identity)" "$(InstallerDir)%(Identity)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Identity) copying</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(InstallerDir)%(Identity)</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -91,50 +121,12 @@ Elevate\Elevate.exe "$(SolutionDir)published_installer\$(PlatformShortName)\$(Co
     <ClInclude Include="tlog.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="installer\Emscripten\emscripten.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\Emscripten\Platform.Common.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\Emscripten\Platform.Default.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\Emscripten\Platform.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\Emscripten\Platform.targets">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\toolset_inner\Microsoft.CppBuild.targets" />
-    <None Include="installer\toolset_inner\Microsoft.CppCommon.targets">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\toolset_inner\Toolset.props">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="installer\toolset_inner\Toolset.targets" />
-    <None Include="template.html" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\installer\installer.vcxproj">
       <Project>{c6930e55-626d-41a0-9aa2-ae0936250939}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\ken-bin\kr3.natvis" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="installer\toolset_inner\cl.xml">
-      <SubType>Designer</SubType>
-    </Xml>
-    <Xml Include="installer\toolset_inner\js.xml" />
-    <Xml Include="installer\toolset_inner\lib.xml">
-      <SubType>Designer</SubType>
-    </Xml>
-    <Xml Include="installer\toolset_inner\link.xml">
-      <SubType>Designer</SubType>
-    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

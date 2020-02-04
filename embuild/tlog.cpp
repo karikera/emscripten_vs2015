@@ -8,20 +8,24 @@ TLogGroup::TLogGroup(Set<Text16> * group) noexcept
 	:m_group(group)
 {
 }
-void TLogGroup::put(Text16 value) noexcept
+bool TLogGroup::put(Text16 value) noexcept
 {
-	m_group->insert(value);
+	auto res = m_group->insert(value);
+	return res.second;
 }
-void TLogGroup::putPath(Text16 value) noexcept
+bool TLogGroup::putPath(Text16 value) noexcept
 {
-	m_group->insert(path16.resolve(value));
+	auto res = m_group->insert(path16.resolve(value));
+	return res.second;
 }
-void TLogGroup::putPath(View<AText16> inputs) noexcept
+bool TLogGroup::putPath(View<AText16> inputs) noexcept
 {
+	bool res = true;
 	for (Text16 text : inputs)
 	{
-		putPath(text);
+		res = putPath(text) && res;
 	}
+	return res;
 }
 
 void TLogInputs::put(Text16 value) noexcept
@@ -117,13 +121,11 @@ void TLog::save() noexcept
 		ucerr << m_filepath << u": error : Cannot save.\n";
 	}
 }
-TLogGroup TLog::reset(Text16 input) noexcept
+TLogGroup TLog::get(Text16 input) noexcept
 {
-	Set<Text16>* group = &m_map[input];
-	group->clear();
-	return group;
+	return &m_map[input];
 }
-TLogGroup TLog::reset(View<AText16> inputs) noexcept
+TLogGroup TLog::get(View<AText16> inputs) noexcept
 {
 	TSZ16 inputTexts;
 	for (Text16 input : inputs)
@@ -132,14 +134,49 @@ TLogGroup TLog::reset(View<AText16> inputs) noexcept
 		inputTexts << u"|";
 	}
 	inputTexts.resize(inputTexts.size() - 1);
-	return reset(inputTexts);
+	return &m_map[inputTexts];
+}
+TLogGroup TLog::get(const TLogInputs& inputs) noexcept
+{
+	_assert(!inputs.m_inputs.empty());
+	return &m_map[inputs.m_inputs.cut(inputs.m_inputs.size() - 1)];
+}
+TLogGroup TLog::reset(Text16 input) noexcept
+{
+	Set<Text16>* group = &m_map[input];
+	group->clear();
+	return group;
+}
+TLogGroup TLog::reset(View<AText16> inputs) noexcept
+{
+	TLogGroup group = get(inputs);
+	group.m_group->clear();
+	return group;
 }
 TLogGroup TLog::reset(const TLogInputs& inputs) noexcept
 {
-	_assert(!inputs.m_inputs.empty());
-	return reset(inputs.m_inputs.cut(inputs.m_inputs.size() - 1));
+	TLogGroup group = get(inputs);
+	group.m_group->clear();
+	return group;
+}
+bool TLog::reset(View<AText16> inputs, Set<Text16> values) noexcept
+{
+	TLogGroup group = get(inputs);
+	if (*group.m_group == values) return false;
+	*group.m_group = move(values);
+	return true;
 }
 void TLog::put(Text16 input, Text16 value) noexcept
 {
 	m_map[input].insert(value);
+}
+
+Set<Text16> TLog::resolve(View<AText16> values) noexcept
+{
+	Set<Text16> sets;
+	for (Text16 text : values)
+	{
+		sets.insert(text);
+	}
+	return sets;
 }

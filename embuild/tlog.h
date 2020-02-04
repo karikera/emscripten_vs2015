@@ -6,11 +6,12 @@ class TLog;
 
 class TLogGroup
 {
+	friend TLog;
 public:
 	TLogGroup(Set<Text16> * group) noexcept;
-	void put(Text16 value) noexcept;
-	void putPath(Text16 value) noexcept;
-	void putPath(View<AText16> inputs) noexcept;
+	bool put(Text16 value) noexcept;
+	bool putPath(Text16 value) noexcept;
+	bool putPath(View<AText16> inputs) noexcept;
 
 private:
 	Set<Text16> * m_group;
@@ -32,10 +33,16 @@ public:
 	TLog() noexcept;
 	void load(pcstr16 path) noexcept;
 	void save() noexcept;
+	TLogGroup get(Text16 input) noexcept;
+	TLogGroup get(View<AText16> inputs) noexcept;
+	TLogGroup get(const TLogInputs& inputs) noexcept;
 	TLogGroup reset(Text16 input) noexcept;
 	TLogGroup reset(View<AText16> inputs) noexcept;
 	TLogGroup reset(const TLogInputs& inputs) noexcept;
+	bool reset(View<AText16> inputs, Set<Text16> values) noexcept;
 	void put(Text16 input, Text16 value) noexcept;
+
+	static Set<Text16> resolve(View<AText16> values) noexcept;
 
 private:
 	AText16 m_filepath;

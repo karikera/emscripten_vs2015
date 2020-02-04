@@ -14,7 +14,6 @@
     <ProjectGuid>{F44903DF-47BA-4AD1-8088-F598E5E73531}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Emscripten</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'" Label="Configuration">
@@ -37,14 +36,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">
-    <LibraryPath>libraryTest</LibraryPath>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">
-    <LibraryPath>libraryTest</LibraryPath>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <BuildOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">CommandLineEMBuild</BuildOutput>
+      <BuildOutput Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">CommandLineEMBuild</BuildOutput>
     </ClCompile>
     <Link>
       <NWJS_Width Condition="'$(Configuration)|$(Platform)'=='Release|Emscripten'">640</NWJS_Width>
@@ -66,9 +69,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <BuildOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Emscripten'">CommandLineEMBuild</BuildOutput>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <JS Include="canvas.js">
