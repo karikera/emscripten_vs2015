@@ -1167,6 +1167,7 @@ bool checkModified(AText16 &output, WRefArray<AText16> inputs, bool exportDefExi
 	}
 	catch (Error&)
 	{
+		return true;
 	}
 
 	for (AText16& input : javascripts)
