@@ -14,7 +14,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <WindowsSDKDir>!</WindowsSDKDir>
     <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
-    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess] [LegacyGlEmulation] [GlUnsafeOpts] [GlUnsafeOpts] [GlFfpOnly] [DisableExceptionCatching] [SafeHeap] [AllowMemoryGrowth] [AbortingMalloc] [TotalMemory] [OutliningLimit]</VEMCommonArguments>
+    <VEMCommonArguments>[BuildOutput] [SuppressStartupBanner] [MinimalRebuildFromTracking] [TrackerLogDirectory] [TrackFileAccess] [LegacyGlEmulation] [GlUnsafeOpts] [GlUnsafeOpts] [GlFfpOnly] [DisableExceptionCatching] [SafeHeap] [AllowMemoryGrowth] [AbortingMalloc] [TotalMemory]</VEMCommonArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ConfigurationType)'=='StaticLibrary'">
     <TargetExt>.bc</TargetExt>
@@ -31,8 +31,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <PreprocessorDefinitions>__EMSCRIPTEN__;__SSE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CommandLineTemplate>@embuild [ObjectFileName] [Type] [PreprocessorDefinitions] [LanguageStandardC] [LanguageStandard] [CompileAs] [Optimization] [AdditionalIncludeDirectories] [Encoding] [DebugInformationFormat] [GNUDisableSpecificWarnings] $(VEMCommonArguments) [Sources]</CommandLineTemplate>
       <Optimization>Disabled</Optimization>
-      <LanguageStandard>CPP1Z</LanguageStandard>
-      <LanguageStandardC>C_2011</LanguageStandardC>
+      <LanguageStandard>stdcpp1z</LanguageStandard>
+      <LanguageStandardC>c_2011</LanguageStandardC>
       <CompileAs></CompileAs>
       <Encoding>UTF-8</Encoding>
       <DebugInformationFormat>Max</DebugInformationFormat>
@@ -74,7 +74,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <AllowMemoryGrowth>false</AllowMemoryGrowth>
       <AbortingMalloc>false</AbortingMalloc>
       <TotalMemory>16777216</TotalMemory>
-      <OutliningLimit></OutliningLimit>
       <SourceMapBase>file://$(OutDir.Replace(' ','%20').Replace('\', '/'))</SourceMapBase>
       <Bind>false</Bind>
       <WASM>No</WASM>

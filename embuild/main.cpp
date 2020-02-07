@@ -365,7 +365,6 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 			{ ParamNoValue, u"allow_memory_growth" },
 			{ ParamNoValue, u"aborting_malloc" },
 			{ ParamValue, u"total_memory" },
-			{ ParamValue, u"outlining_limit"},
 			{ ParamValue, u"source_map_base"},
 			
 			{ ParamValue, u"charset" },
@@ -448,7 +447,6 @@ int CT_CDECL wmain(int argn, wchar_t ** args, wchar_t** envp)
 			else if (name == u"allow_memory_growth") ex_arguments << u" -s ALLOW_MEMORY_GROWTH=1";
 			else if (name == u"aborting_malloc") ex_arguments << u" -s ABORTING_MALLOC=1";
 			else if (name == u"total_memory") ex_arguments << u" -s TOTAL_MEMORY=" << value;
-			else if (name == u"outlining_limit") ex_arguments << u" -s OUTLINING_LIMIT=" << value;
 			else if (name == u"bind") ex_arguments << u" --bind";
 			else if (name == u"wasm")
 			{
@@ -884,7 +882,7 @@ dword lib(AText16 &output, WRefArray<AText16> inputs) throws(ErrorCode)
 				command << u" \"" << input << u"\"";
 		}
 
-		command << u" -o \"" << output << u"\"";
+		command << u" -r -o \"" << output << u"\"";
 
 		ucout << u"Linking...\n";
 		ucout.flush();

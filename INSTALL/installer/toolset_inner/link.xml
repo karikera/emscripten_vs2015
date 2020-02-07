@@ -70,7 +70,6 @@
     <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
     <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
     <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
-    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
     <BoolProperty Name="Bind" Switch="bind" Description="Bind" Category="Emscripten" />
     <EnumProperty Name="WASM" Description="WASM" Category="Emscripten">
       <EnumValue Name="NativeWASM" Switch="wasm:native-wasm" DisplayName="Native WASM" Description="Use native binary wasm support in the browser." />

@@ -266,7 +266,6 @@ EMVIEWER_APP=$(OutDir)</LocalDebuggerEnvironment>
         AllowMemoryGrowth="%(ClCompile.AllowMemoryGrowth)"
         AbortingMalloc="%(ClCompile.AbortingMalloc)"
         TotalMemory="%(ClCompile.TotalMemory)"
-        OutliningLimit="%(ClCompile.OutliningLimit)"
         
         TrackerLogDirectory                ="%(ClCompile.TrackerLogDirectory)"
         MinimalRebuildFromTracking         ="%(ClCompile.MinimalRebuildFromTracking)"
@@ -466,7 +465,6 @@ EMVIEWER_APP=$(OutDir)</LocalDebuggerEnvironment>
         AllowMemoryGrowth="%(Link.AllowMemoryGrowth)"
         AbortingMalloc="%(Link.AbortingMalloc)"
         TotalMemory="%(Link.TotalMemory)"
-        OutliningLimit="%(Link.OutliningLimit)"
         SourceMapBase="%(Link.SourceMapBase)"
         Bind="%(Link.Bind)"
         WASM="%(Link.WASM)"
@@ -640,7 +638,6 @@ EMVIEWER_APP=$(OutDir)</LocalDebuggerEnvironment>
         AllowMemoryGrowth="%(Lib.AllowMemoryGrowth)"
         AbortingMalloc="%(Lib.AbortingMalloc)"
         TotalMemory="%(Lib.TotalMemory)"
-        OutliningLimit="%(Lib.OutliningLimit)"
         
         BuildOutput ="%(Lib.BuildOutput)"
 

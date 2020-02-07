@@ -71,42 +71,42 @@
     </StringProperty>
 
     <EnumProperty Name="LanguageStandard" DisplayName="C++ Language Standard" Description="Determines the C++ language standard the compiler will enforce. It is recommended to use the latest version when possible. (/std:c++98, /std:c++11, /std:c++14, /std:c++17, /std:c++1z, /std:c++2a, /std:gnu++98, /std:gnu++11, /std:gnu++14, /std:gnu++1z)" Category="Language" F1Keyword="VC.Project.VCCLCompilerTool.CppLanguageStandard">
-      <EnumValue Name="CPP98" Switch="std:c++98" DisplayName="C++98" Description="ISO C++98 Standard">
+      <EnumValue Name="stdcpp98" Switch="std:c++98" DisplayName="C++98" Description="ISO C++98 Standard">
       </EnumValue>
-      <EnumValue Name="CPP11" Switch="std:c++11" DisplayName="C++11" Description="ISO C++11 Standard">
+      <EnumValue Name="stdcpp11" Switch="std:c++11" DisplayName="C++11" Description="ISO C++11 Standard">
       </EnumValue>
-      <EnumValue Name="CPP14" Switch="std:c++14" DisplayName="C++14" Description="ISO C++14 Standard">
+      <EnumValue Name="stdcpp14" Switch="std:c++14" DisplayName="C++14" Description="ISO C++14 Standard">
       </EnumValue>
-      <EnumValue Name="CPP17" Switch="std:c++17" DisplayName="C++17" Description="ISO C++17 Standard">
+      <EnumValue Name="stdcpp17" Switch="std:c++17" DisplayName="C++17" Description="ISO C++17 Standard">
       </EnumValue>
-      <EnumValue Name="CPP1Z" Switch="std:c++1z" DisplayName="C++1z" Description="ISO C++1z Standard">
+      <EnumValue Name="stdcpp1z" Switch="std:c++1z" DisplayName="C++1z" Description="ISO C++1z Standard">
       </EnumValue>
-      <EnumValue Name="CPP2A" Switch="std:c++2a" DisplayName="C++2a" Description="ISO C++2a Standard">
+      <EnumValue Name="stdcpp2a" Switch="std:c++2a" DisplayName="C++2a" Description="ISO C++2a Standard">
       </EnumValue>
-      <EnumValue Name="GNU98" Switch="std:gnu++98" DisplayName="GNU++98" Description="C++98 with GNU Extension">
+      <EnumValue Name="gnucpp98" Switch="std:gnu++98" DisplayName="GNU++98" Description="C++98 with GNU Extension">
       </EnumValue>
-      <EnumValue Name="GNU11" Switch="std:gnu++11" DisplayName="GNU++11" Description="C++11 with GNU Extension">
+      <EnumValue Name="gnucpp11" Switch="std:gnu++11" DisplayName="GNU++11" Description="C++11 with GNU Extension">
       </EnumValue>
-      <EnumValue Name="GNU14" Switch="std:gnu++14" DisplayName="GNU++14" Description="C++14 with GNU Extension">
+      <EnumValue Name="gnucpp14" Switch="std:gnu++14" DisplayName="GNU++14" Description="C++14 with GNU Extension">
       </EnumValue>
-      <EnumValue Name="GNU1Z" Switch="std:gnu++1z" DisplayName="GNU++1z" Description="C++1z with GNU Extension">
+      <EnumValue Name="gnucpp1Z" Switch="std:gnu++1z" DisplayName="GNU++1z" Description="C++1z with GNU Extension">
       </EnumValue>
     </EnumProperty>
 
     <EnumProperty Name="LanguageStandardC" DisplayName="C Lanuage Standard" Description="Determines the C language standard the compiler will enforce." Category="Language">
-      <EnumValue Name="C_1990" Switch="std:iso9899:1990" DisplayName="ISO C 1990" Description="ISO C 1990">
+      <EnumValue Name="c_1990" Switch="std:iso9899:1990" DisplayName="ISO C 1990" Description="ISO C 1990">
       </EnumValue>
-      <EnumValue Name="C_1990_A1" Switch="std:iso9899:199409" DisplayName="ISO C 1990 with amendment 1" Description="ISO C 1990 with amendment 1">
+      <EnumValue Name="c_1990_a1" Switch="std:iso9899:199409" DisplayName="ISO C 1990 with amendment 1" Description="ISO C 1990 with amendment 1">
       </EnumValue>
-      <EnumValue Name="GNU_1990" Switch="std:gnu89" DisplayName="ISO C 1990 with GNU extensions" Description="ISO C 1990 with GNU extensions">
+      <EnumValue Name="gnu_1990" Switch="std:gnu89" DisplayName="ISO C 1990 with GNU extensions" Description="ISO C 1990 with GNU extensions">
       </EnumValue>
-      <EnumValue Name="C_1999" Switch="std:iso9899:1999" DisplayName="ISO C 1999" Description="ISO C 1999">
+      <EnumValue Name="c_1999" Switch="std:iso9899:1999" DisplayName="ISO C 1999" Description="ISO C 1999">
       </EnumValue>
-      <EnumValue Name="GNU_1999" Switch="std:gnu99" DisplayName="ISO C 1999 with GNU extensions" Description="ISO C 1999 with GNU extensions">
+      <EnumValue Name="gnu_1999" Switch="std:gnu99" DisplayName="ISO C 1999 with GNU extensions" Description="ISO C 1999 with GNU extensions">
       </EnumValue>
-      <EnumValue Name="C_2011" Switch="std:iso9899:2011" DisplayName="ISO C 2011" Description="ISO C 2011">
+      <EnumValue Name="c_2011" Switch="std:iso9899:2011" DisplayName="ISO C 2011" Description="ISO C 2011">
       </EnumValue>
-      <EnumValue Name="GNU_2011" Switch="std:gnu11" DisplayName="ISO C 2011 with GNU extensions" Description="ISO C 2011 with GNU extensions">
+      <EnumValue Name="gnu_2011" Switch="std:gnu11" DisplayName="ISO C 2011 with GNU extensions" Description="ISO C 2011 with GNU extensions">
       </EnumValue>
     </EnumProperty>
 
@@ -150,7 +150,6 @@
     <BoolProperty Name="AllowMemoryGrowth" Switch="allow_memory_growth" DisplayName="Allow Memory Growth" Category="Emscripten" />
     <BoolProperty Name="AbortingMalloc" Switch="aborting_malloc" DisplayName="Aborting Malloc" Category="Emscripten" />
     <StringProperty Name="TotalMemory" Switch="total_memory:" DisplayName="Total Memory" Category="Emscripten" />
-    <StringProperty Name="OutliningLimit" Switch="outlining_limit:" DisplayName="Outlining Limit" Category="Emscripten" />
 
     <StringListProperty Name="GNUDisableSpecificWarnings" DisplayName="Disable Specific Warnings" Description="Disable the desired warning numbers; put numbers in a semi-colon delimited list.     (/W[name])" Category="Advanced" Switch="W" F1Keyword="VC.Project.VCCLCompilerTool.DisableSpecificWarnings">
     </StringListProperty>
